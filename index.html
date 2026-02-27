@@ -30,6 +30,11 @@
             overscroll-behavior-y: none;
         }
 
+        /* --- SCROLL LOCK CLASS --- */
+        body.no-scroll {
+            overflow: hidden;
+        }
+
         header {
             display: flex;
             justify-content: space-between;
@@ -112,9 +117,26 @@
         }
 
         .card-content { padding: 1.2rem; }
-        .card-title { font-size: 1.25rem; font-weight: 700; }
+        .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
 
-        /* --- FIXED MODAL FRAMING --- */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag-chip {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            color: white;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
         dialog {
             border: none;
             border-radius: var(--radius);
@@ -122,8 +144,8 @@
             padding: 0;
             width: 90%;
             max-width: 600px;
-            height: 85vh; /* Strictly enforce 85% of screen height */
-            margin: auto; /* Let the browser natively center it perfectly */
+            height: 85vh;
+            margin: auto;
             background: var(--card-bg);
             color: var(--text-main);
             overflow-x: hidden;
@@ -169,7 +191,7 @@
         .btn-close:hover { background: rgba(255,255,255,1); }
 
         .modal-body { padding: 2rem; }
-        .modal-title { font-size: 2rem; margin-bottom: 1.5rem; line-height: 1.2; }
+        .modal-title { font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2; }
         h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.2rem; color: var(--accent); }
         ul, ol { margin-left: 1.5rem; line-height: 1.6; }
         li { margin-bottom: 0.5rem; }
@@ -184,8 +206,9 @@
         .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; }
         #exportArea { font-family: monospace; font-size: 0.8rem; height: 150px; margin-top: 1rem; }
 
+        /* --- UPDATED CONTEXT MENU --- */
         #contextMenu {
-            display: none;
+            visibility: hidden; /* Changed from display:none so we can calculate its size accurately */
             position: absolute;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -196,11 +219,13 @@
             transform: scale(0.9);
             opacity: 0;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            width: max-content; /* Ensures it sizes perfectly to the text */
         }
 
         #contextMenu.show {
-            display: flex;
-            flex-direction: column;
+            visibility: visible;
             transform: scale(1);
             opacity: 1;
         }
@@ -227,7 +252,7 @@
 <body>
 
     <header>
-        <h1>Mini Rezäpt</h1>
+        <h1>Recipes</h1>
         <div class="header-buttons">
             <button class="btn-export" id="btnExport">Export Code</button>
             <button class="btn-add" id="openAddModal" title="Add Recipe">+</button>
@@ -248,6 +273,7 @@
         </div>
         <div class="modal-body">
             <h2 class="modal-title" id="viewTitle">Title</h2>
+            <div class="tags-container" id="viewTags"></div>
             <h3>Ingredients</h3><ul id="viewIngredients"></ul>
             <h3>Steps</h3><ol id="viewSteps"></ol>
         </div>
@@ -262,9 +288,14 @@
             <h2 class="modal-title" id="formModalTitle">New Recipe</h2>
             <form id="recipeForm">
                 <div><label>Recipe Name</label><input type="text" id="titleInput" required></div>
+                <div>
+                    <label>Tags</label>
+                    <input type="text" id="tagsInput" placeholder="e.g. Breakfast, Vegan, Quick">
+                    <div class="help-text">Separate tags with commas.</div>
+                </div>
                 <div><label>Image URL</label><input type="url" id="imageInput" required></div>
-                <div><label>Ingredients</label><textarea id="ingredientsInput" required></textarea><div class="help-text">Put each ingredient on a new line.</div></div>
-                <div><label>Steps</label><textarea id="stepsInput" required></textarea><div class="help-text">Put each step on a new line.</div></div>
+                <div><label>Ingredients</label><textarea id="ingredientsInput" required></textarea></div>
+                <div><label>Steps</label><textarea id="stepsInput" required></textarea></div>
                 <button type="submit" class="btn-submit">Save Recipe</button>
             </form>
         </div>
@@ -282,7 +313,18 @@
     <script src="recipes.js"></script>
 
     <script>
-        let recipes = JSON.parse(localStorage.getItem('myRecipes')) || defaultRecipes;
+        const fallbackRecipes = [
+            {
+                id: 1,
+                title: "Classic Avocado Toast",
+                tags: ["Breakfast", "Vegan", "Quick"],
+                image: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=800&q=80",
+                ingredients: ["2 slices sourdough bread", "1 ripe avocado", "Cherry tomatoes", "Salt, pepper"],
+                steps: ["Toast the bread.", "Mash the avocado.", "Spread and season."]
+            }
+        ];
+
+        let recipes = JSON.parse(localStorage.getItem('myRecipes')) || (typeof defaultRecipes !== 'undefined' ? defaultRecipes : fallbackRecipes);
         let activeRecipeId = null;
 
         const recipeGrid = document.getElementById('recipeGrid');
@@ -291,14 +333,45 @@
         const exportModal = document.getElementById('exportModal');
         const contextMenu = document.getElementById('contextMenu');
 
+        // --- SCROLL LOCKING LOGIC ---
+        function lockScroll() { document.body.classList.add('no-scroll'); }
+        function unlockScroll() { document.body.classList.remove('no-scroll'); }
+
+        // Automatically unlock scroll whenever ANY dialog closes (either by button or background click)
+        document.querySelectorAll('dialog').forEach(dialog => {
+            dialog.addEventListener('close', unlockScroll);
+        });
+
+        function getVibrantColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash) % 360;
+            return `hsl(${hue}, 80%, 45%)`;
+        }
+
+        function generateTagsHTML(tagsArray) {
+            if (!tagsArray || tagsArray.length === 0) return '';
+            return tagsArray.map(tag => {
+                const color = getVibrantColor(tag);
+                return `<span class="tag-chip" style="background-color: ${color};">${tag}</span>`;
+            }).join('');
+        }
+
         function renderRecipes() {
             recipeGrid.innerHTML = '';
             recipes.forEach(recipe => {
                 const card = document.createElement('div');
                 card.className = 'card';
+                const safeTags = recipe.tags || [];
+
                 card.innerHTML = `
                     <img src="${recipe.image}" class="card-img" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
-                    <div class="card-content"><div class="card-title">${recipe.title}</div></div>
+                    <div class="card-content">
+                        <div class="card-title">${recipe.title}</div>
+                        <div class="tags-container">${generateTagsHTML(safeTags)}</div>
+                    </div>
                 `;
 
                 card.addEventListener('click', () => {
@@ -328,6 +401,8 @@
         function openViewModal(recipe) {
             document.getElementById('viewTitle').textContent = recipe.title;
             document.getElementById('viewImg').src = recipe.image;
+            const safeTags = recipe.tags || [];
+            document.getElementById('viewTags').innerHTML = generateTagsHTML(safeTags);
 
             document.getElementById('viewIngredients').innerHTML = '';
             recipe.ingredients.forEach(ing => document.getElementById('viewIngredients').innerHTML += `<li>${ing}</li>`);
@@ -336,23 +411,37 @@
             recipe.steps.forEach(step => document.getElementById('viewSteps').innerHTML += `<li>${step}</li>`);
 
             viewModal.showModal();
+            lockScroll(); // Lock scroll when opening
         }
 
-        // --- Improved Background Click-to-Close ---
+        // Close when clicking outside of the modal
         document.querySelectorAll('dialog').forEach(dialog => {
             dialog.addEventListener('click', (e) => {
                 const rect = dialog.getBoundingClientRect();
-                // Because we removed the CSS transform hack, getBoundingClientRect now perfectly matches the visual dialog box
                 if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
-                    dialog.close();
+                    dialog.close(); // Triggers the 'close' event listener which unlocks the scroll
                 }
             });
         });
 
+        // --- SMART CONTEXT MENU POSITIONING ---
         function showContextMenu(x, y, id) {
             activeRecipeId = id;
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
+
+            // Get the exact width/height of the menu
+            const rect = contextMenu.getBoundingClientRect();
+
+            // Calculate top-left placement with a 15px buffer from the finger
+            let posX = x - rect.width - 15;
+            let posY = y - rect.height - 15;
+
+            // Boundary Protection: If clicking too close to the left/top edges, flip it so it isn't cut off
+            if (posX < 10) posX = x + 15;
+            if (posY < 10) posY = y + 15;
+
+            contextMenu.style.left = `${posX}px`;
+            contextMenu.style.top = `${posY}px`;
+
             contextMenu.classList.add('show');
         }
 
@@ -368,11 +457,13 @@
 
             document.getElementById('formModalTitle').textContent = "Edit Recipe";
             document.getElementById('titleInput').value = recipeToEdit.title;
+            document.getElementById('tagsInput').value = (recipeToEdit.tags || []).join(', ');
             document.getElementById('imageInput').value = recipeToEdit.image;
             document.getElementById('ingredientsInput').value = recipeToEdit.ingredients.join('\n');
             document.getElementById('stepsInput').value = recipeToEdit.steps.join('\n');
 
             formModal.showModal();
+            lockScroll(); // Lock scroll
         });
 
         document.getElementById('btnDelete').addEventListener('click', () => {
@@ -389,6 +480,7 @@
             document.getElementById('formModalTitle').textContent = "New Recipe";
             document.getElementById('recipeForm').reset();
             formModal.showModal();
+            lockScroll(); // Lock scroll
         });
 
         document.getElementById('recipeForm').addEventListener('submit', (e) => {
@@ -396,25 +488,28 @@
 
             const title = document.getElementById('titleInput').value;
             const image = document.getElementById('imageInput').value;
+            const tagsRaw = document.getElementById('tagsInput').value;
+            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t !== '');
             const ingredients = document.getElementById('ingredientsInput').value.split('\n').map(i => i.trim()).filter(i => i);
             const steps = document.getElementById('stepsInput').value.split('\n').map(s => s.trim()).filter(s => s);
 
             if (activeRecipeId) {
                 const recipeIndex = recipes.findIndex(r => r.id === activeRecipeId);
-                recipes[recipeIndex] = { ...recipes[recipeIndex], title, image, ingredients, steps };
+                recipes[recipeIndex] = { ...recipes[recipeIndex], title, tags, image, ingredients, steps };
             } else {
-                recipes.push({ id: Date.now(), title, image, ingredients, steps });
+                recipes.push({ id: Date.now(), title, tags, image, ingredients, steps });
             }
 
             localStorage.setItem('myRecipes', JSON.stringify(recipes));
             renderRecipes();
-            formModal.close();
+            formModal.close(); // Triggers the 'close' event which unlocks the scroll
         });
 
         document.getElementById('btnExport').addEventListener('click', () => {
             const jsCode = `const defaultRecipes = ${JSON.stringify(recipes, null, 4)};`;
             document.getElementById('exportArea').value = jsCode;
             exportModal.showModal();
+            lockScroll(); // Lock scroll
         });
 
         document.getElementById('closeFormModal').addEventListener('click', () => formModal.close());
