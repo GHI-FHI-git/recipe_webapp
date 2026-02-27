@@ -18,7 +18,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Comic Relief", "Comic Sans MS", "Chalkboard SE", "Comic Sans", cursive, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -31,15 +31,13 @@
             overscroll-behavior-y: none;
         }
 
-        body.no-scroll {
-            overflow: hidden;
-        }
+        body.no-scroll { overflow: hidden; }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem; /* Slightly reduced to make room for the filter bar */
+            margin-bottom: 1rem;
         }
 
         h1 {
@@ -48,21 +46,22 @@
             letter-spacing: -0.5px;
         }
 
-        .header-buttons { display: flex; gap: 10px; }
+        .header-buttons { display: flex; gap: 10px; align-items: center; }
 
-        .btn-export {
+        /* Temporary Migrate Button */
+        .btn-migrate {
             background-color: var(--card-bg);
-            color: var(--accent);
-            border: 2px solid var(--accent);
+            color: #007aff; /* iOS blue to stand out */
+            border: 2px solid #007aff;
             border-radius: 20px;
-            padding: 0 1rem;
+            padding: 0.5rem 1rem;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .btn-export:hover { background-color: var(--accent); color: white; }
+        .btn-migrate:hover { background-color: #007aff; color: white; }
 
         .btn-add {
             background-color: var(--accent);
@@ -83,31 +82,23 @@
 
         .btn-add:hover { transform: scale(1.05); }
 
-        /* --- FILTER BAR STYLES --- */
-        #filterBar {
-            margin-bottom: 2rem;
-            padding-bottom: 0.5rem; /* Room for drop shadows */
-        }
+        #filterBar { margin-bottom: 2rem; padding-bottom: 0.5rem; }
 
         .filter-chip {
             cursor: pointer;
-            font-size: 0.8rem; /* Slightly larger than normal card tags */
+            font-size: 0.8rem;
             padding: 8px 16px;
-            opacity: 0.4; /* Faded when not selected */
+            opacity: 0.4;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .filter-chip:hover {
-            opacity: 0.8;
-            transform: translateY(-2px);
-        }
+        .filter-chip:hover { opacity: 0.8; transform: translateY(-2px); }
 
         .filter-chip.active {
             opacity: 1;
             transform: scale(1.05) translateY(-2px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
-        /* ----------------------- */
 
         .recipe-grid {
             display: grid;
@@ -130,26 +121,13 @@
             -webkit-touch-callout: none;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.08);
-        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.08); }
 
-        .card-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background-color: #e5e5ea;
-        }
-
+        .card-img { width: 100%; height: 200px; object-fit: cover; background-color: #e5e5ea; }
         .card-content { padding: 1.2rem; }
         .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
 
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px; /* Slight increase in gap for readability */
-        }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
 
         .tag-chip {
             font-size: 0.7rem;
@@ -177,60 +155,26 @@
             overflow-y: auto;
         }
 
-        dialog[open] {
-            animation: modalZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        dialog::backdrop {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        dialog[open]::backdrop {
-            animation: backdropFadeIn 0.3s ease forwards;
-        }
+        dialog[open] { animation: modalZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        dialog[open]::backdrop { animation: backdropFadeIn 0.3s ease forwards; }
 
         @keyframes modalZoomIn {
             from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        @keyframes backdropFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes backdropFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-header { position: relative; }
-
-        .modal-img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            background-color: #e5e5ea;
-            display: block;
-        }
+        .modal-img { width: 100%; height: 300px; object-fit: cover; background-color: #e5e5ea; display: block; }
 
         .btn-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(4px);
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px);
+            border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer;
+            font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: background 0.2s;
         }
-
         .btn-close:hover { background: rgba(255,255,255,1); }
 
         .modal-body { padding: 2rem; }
@@ -244,51 +188,27 @@
         input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 1rem; font-family: inherit; }
         input:focus, textarea:focus { outline: none; border-color: var(--accent); }
         textarea { resize: vertical; min-height: 100px; }
-
         .btn-submit { background-color: var(--accent); color: white; border: none; border-radius: 10px; padding: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
         .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; }
-        #exportArea { font-family: monospace; font-size: 0.8rem; height: 150px; margin-top: 1rem; }
 
         #contextMenu {
-            visibility: hidden;
-            position: absolute;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            overflow: hidden;
-            z-index: 100;
-            transform: scale(0.9);
-            opacity: 0;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            width: max-content;
+            visibility: hidden; position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; z-index: 100;
+            transform: scale(0.9); opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+            display: flex; flex-direction: column; width: max-content;
         }
 
-        #contextMenu.show {
-            visibility: visible;
-            transform: scale(1);
-            opacity: 1;
-        }
+        #contextMenu.show { visibility: visible; transform: scale(1); opacity: 1; }
 
         .context-btn {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            text-align: left;
-            cursor: pointer;
-            font-weight: 500;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: none; border: none; padding: 12px 20px; font-size: 1rem; text-align: left; cursor: pointer;
+            font-weight: 500; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px;
         }
-
         .context-btn:last-child { border-bottom: none; }
         .context-btn:hover { background: #f4f4f6; }
         .context-btn.delete { color: #ff3b30; }
+
+        .loading-state { text-align: center; color: var(--text-muted); margin-top: 2rem; font-style: italic; }
     </style>
 </head>
 <body>
@@ -296,14 +216,16 @@
     <header>
         <h1>Recipes</h1>
         <div class="header-buttons">
-            <button class="btn-export" id="btnExport">Export Code</button>
+            <button class="btn-migrate" id="btnMigrate">Migrate Old Recipes</button>
             <button class="btn-add" id="openAddModal" title="Add Recipe">+</button>
         </div>
     </header>
 
     <div id="filterBar" class="tags-container"></div>
 
-    <main class="recipe-grid" id="recipeGrid"></main>
+    <main class="recipe-grid" id="recipeGrid">
+        <div class="loading-state">Loading recipes from the cloud...</div>
+    </main>
 
     <div id="contextMenu">
         <button class="context-btn" id="btnEdit">✏️ Edit Recipe</button>
@@ -345,183 +267,162 @@
         </div>
     </dialog>
 
-    <dialog id="exportModal">
-        <div class="modal-body">
-            <button class="btn-close" id="closeExportModal" style="top: 15px; right: 15px; background: #e5e5ea; color: black;">×</button>
-            <h2 class="modal-title">Export to recipes.js</h2>
-            <p>Copy the code below and paste it directly into your <b>recipes.js</b> file to permanently save your new additions.</p>
-            <textarea id="exportArea" readonly></textarea>
-        </div>
-    </dialog>
-
     <script src="recipes.js"></script>
 
-    <script>
-        const fallbackRecipes = [
-            {
-                id: 1,
-                title: "Classic Avocado Toast",
-                tags: ["Breakfast", "Vegan", "Quick"],
-                image: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=800&q=80",
-                ingredients: ["2 slices sourdough bread", "1 ripe avocado", "Cherry tomatoes", "Salt, pepper"],
-                steps: ["Toast the bread.", "Mash the avocado.", "Spread and season."]
-            },
-            {
-                id: 2,
-                title: "Iced Matcha Latte",
-                tags: ["Drinks", "Quick"],
-                image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=800&q=80",
-                ingredients: ["1 tsp matcha powder", "2 oz hot water", "1 cup milk", "Ice"],
-                steps: ["Whisk matcha and hot water.", "Add ice to glass.", "Pour milk over ice.", "Top with matcha."]
-            }
-        ];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        let recipes = JSON.parse(localStorage.getItem('myRecipes')) || (typeof defaultRecipes !== 'undefined' ? defaultRecipes : fallbackRecipes);
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcQ6lwEMjD_vDkephFPS_hTVknbkC2MZ8",
+            authDomain: "gourmet-eb242.firebaseapp.com",
+            databaseURL: "https://gourmet-eb242-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "gourmet-eb242",
+            storageBucket: "gourmet-eb242.firebasestorage.app",
+            messagingSenderId: "120771364577",
+            appId: "1:120771364577:web:f189f1321828b3522919a0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const recipesCollection = collection(db, "recipes");
+
+        let recipes = [];
         let activeRecipeId = null;
-        let activeFilter = null; // Keeps track of which tag we are currently filtering by
+        let activeFilter = null;
 
         const recipeGrid = document.getElementById('recipeGrid');
         const filterBar = document.getElementById('filterBar');
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
-        const exportModal = document.getElementById('exportModal');
         const contextMenu = document.getElementById('contextMenu');
+
+        // --- MIGRATION LOGIC ---
+        document.getElementById('btnMigrate').addEventListener('click', async () => {
+            // Check browser storage first, then the old recipes.js file
+            const oldRecipes = JSON.parse(localStorage.getItem('myRecipes')) || (typeof defaultRecipes !== 'undefined' ? defaultRecipes : []);
+
+            if (oldRecipes.length === 0) {
+                alert("No old recipes found to migrate!");
+                return;
+            }
+
+            if (confirm(`Found ${oldRecipes.length} old recipes. Do you want to copy them to your new cloud database?`)) {
+                // Change button text to show it's working
+                document.getElementById('btnMigrate').textContent = "Uploading...";
+
+                for (const recipe of oldRecipes) {
+                    const recipeData = {
+                        title: recipe.title || "Untitled Recipe",
+                        tags: recipe.tags || [],
+                        image: recipe.image || "",
+                        ingredients: recipe.ingredients || [],
+                        steps: recipe.steps || []
+                    };
+                    await addDoc(recipesCollection, recipeData);
+                }
+
+                alert("Migration complete! All your old recipes are now in Firebase.\n\nNext Step: Delete the 'btnMigrate' button from your HTML code, and delete your old 'recipes.js' file entirely.");
+                document.getElementById('btnMigrate').style.display = 'none'; // Hide button after success
+            }
+        });
+
+        onSnapshot(recipesCollection, (snapshot) => {
+            recipes = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            if (recipes.length === 0) {
+                recipeGrid.innerHTML = '<div class="loading-state">No recipes yet. Add one!</div>';
+                filterBar.innerHTML = '';
+            } else {
+                renderRecipes();
+            }
+        });
 
         function lockScroll() { document.body.classList.add('no-scroll'); }
         function unlockScroll() { document.body.classList.remove('no-scroll'); }
-
-        document.querySelectorAll('dialog').forEach(dialog => {
-            dialog.addEventListener('close', unlockScroll);
-        });
+        document.querySelectorAll('dialog').forEach(dialog => dialog.addEventListener('close', unlockScroll));
 
         function getVibrantColor(str) {
             let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const hue = Math.abs(hash) % 360;
-            return `hsl(${hue}, 80%, 45%)`;
+            for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+            return `hsl(${Math.abs(hash) % 360}, 80%, 45%)`;
         }
 
-        // Extracts all unique tags from all recipes
         function getUniqueTags() {
             const allTags = new Set();
-            recipes.forEach(recipe => {
-                if (recipe.tags) {
-                    recipe.tags.forEach(tag => allTags.add(tag));
-                }
-            });
-            // Sort them alphabetically so they always appear in the same order
+            recipes.forEach(r => r.tags && r.tags.forEach(t => allTags.add(t)));
             return Array.from(allTags).sort();
         }
 
-        // Renders the clickable chips under the header
         function renderFilterBar() {
             filterBar.innerHTML = '';
             const uniqueTags = getUniqueTags();
+            if (uniqueTags.length === 0) return;
 
-            if (uniqueTags.length === 0) return; // Hide if no tags exist at all
-
-            // Create the "All" button
             const allBtn = document.createElement('span');
             allBtn.className = `tag-chip filter-chip ${activeFilter === null ? 'active' : ''}`;
-            allBtn.style.backgroundColor = 'var(--text-main)'; // A solid dark color for 'All'
+            allBtn.style.backgroundColor = 'var(--text-main)';
             allBtn.textContent = 'All';
-            allBtn.addEventListener('click', () => {
-                activeFilter = null;
-                renderRecipes();
-            });
+            allBtn.addEventListener('click', () => { activeFilter = null; renderRecipes(); });
             filterBar.appendChild(allBtn);
 
-            // Create a button for each unique tag
             uniqueTags.forEach(tag => {
                 const btn = document.createElement('span');
                 btn.className = `tag-chip filter-chip ${activeFilter === tag ? 'active' : ''}`;
                 btn.style.backgroundColor = getVibrantColor(tag);
                 btn.textContent = tag;
-
                 btn.addEventListener('click', () => {
-                    // Toggle off if you click the tag that is already active
-                    if (activeFilter === tag) {
-                        activeFilter = null;
-                    } else {
-                        activeFilter = tag;
-                    }
-                    renderRecipes(); // Re-draw the grid
+                    activeFilter = (activeFilter === tag) ? null : tag;
+                    renderRecipes();
                 });
-
                 filterBar.appendChild(btn);
             });
         }
 
         function generateTagsHTML(tagsArray) {
             if (!tagsArray || tagsArray.length === 0) return '';
-            return tagsArray.map(tag => {
-                const color = getVibrantColor(tag);
-                return `<span class="tag-chip" style="background-color: ${color};">${tag}</span>`;
-            }).join('');
+            return tagsArray.map(tag => `<span class="tag-chip" style="background-color: ${getVibrantColor(tag)};">${tag}</span>`).join('');
         }
 
         function renderRecipes() {
             recipeGrid.innerHTML = '';
-
-            // First, filter the recipes based on the activeFilter!
-            const recipesToShow = activeFilter
-                ? recipes.filter(r => r.tags && r.tags.includes(activeFilter))
-                : recipes;
+            const recipesToShow = activeFilter ? recipes.filter(r => r.tags && r.tags.includes(activeFilter)) : recipes;
 
             recipesToShow.forEach(recipe => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                const safeTags = recipe.tags || [];
-
                 card.innerHTML = `
                     <img src="${recipe.image}" class="card-img" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
                     <div class="card-content">
                         <div class="card-title">${recipe.title}</div>
-                        <div class="tags-container">${generateTagsHTML(safeTags)}</div>
+                        <div class="tags-container">${generateTagsHTML(recipe.tags)}</div>
                     </div>
                 `;
 
-                card.addEventListener('click', () => {
-                    if (contextMenu.classList.contains('show')) return;
-                    openViewModal(recipe);
-                });
-
-                card.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showContextMenu(e.pageX, e.pageY, recipe.id);
-                });
+                card.addEventListener('click', () => { if (!contextMenu.classList.contains('show')) openViewModal(recipe); });
+                card.addEventListener('contextmenu', (e) => { e.preventDefault(); showContextMenu(e.pageX, e.pageY, recipe.id); });
 
                 let touchTimer;
                 card.addEventListener('touchstart', (e) => {
-                    touchTimer = setTimeout(() => {
-                        const touch = e.touches[0];
-                        showContextMenu(touch.pageX, touch.pageY, recipe.id);
-                    }, 500);
+                    touchTimer = setTimeout(() => { showContextMenu(e.touches[0].pageX, e.touches[0].pageY, recipe.id); }, 500);
                 });
                 card.addEventListener('touchend', () => clearTimeout(touchTimer));
                 card.addEventListener('touchmove', () => clearTimeout(touchTimer));
 
                 recipeGrid.appendChild(card);
             });
-
-            // Make sure the filter bar updates its active states and catches any newly added tags
             renderFilterBar();
         }
 
         function openViewModal(recipe) {
             document.getElementById('viewTitle').textContent = recipe.title;
             document.getElementById('viewImg').src = recipe.image;
-            const safeTags = recipe.tags || [];
-            document.getElementById('viewTags').innerHTML = generateTagsHTML(safeTags);
-
-            document.getElementById('viewIngredients').innerHTML = '';
-            recipe.ingredients.forEach(ing => document.getElementById('viewIngredients').innerHTML += `<li>${ing}</li>`);
-
-            document.getElementById('viewSteps').innerHTML = '';
-            recipe.steps.forEach(step => document.getElementById('viewSteps').innerHTML += `<li>${step}</li>`);
-
+            document.getElementById('viewTags').innerHTML = generateTagsHTML(recipe.tags);
+            document.getElementById('viewIngredients').innerHTML = recipe.ingredients.map(ing => `<li>${ing}</li>`).join('');
+            document.getElementById('viewSteps').innerHTML = recipe.steps.map(step => `<li>${step}</li>`).join('');
             viewModal.showModal();
             lockScroll();
         }
@@ -529,55 +430,42 @@
         document.querySelectorAll('dialog').forEach(dialog => {
             dialog.addEventListener('click', (e) => {
                 const rect = dialog.getBoundingClientRect();
-                if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
-                    dialog.close();
-                }
+                if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) dialog.close();
             });
         });
 
         function showContextMenu(x, y, id) {
             activeRecipeId = id;
-
             const rect = contextMenu.getBoundingClientRect();
             let posX = x - rect.width - 15;
             let posY = y - rect.height - 15;
-
             if (posX < 10) posX = x + 15;
             if (posY < 10) posY = y + 15;
-
-            contextMenu.style.left = `${posX}px`;
-            contextMenu.style.top = `${posY}px`;
-
+            contextMenu.style.left = `${posX}px`; contextMenu.style.top = `${posY}px`;
             contextMenu.classList.add('show');
         }
 
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card') && !e.target.closest('#contextMenu')) {
-                contextMenu.classList.remove('show');
-            }
+            if (!e.target.closest('.card') && !e.target.closest('#contextMenu')) contextMenu.classList.remove('show');
         });
 
         document.getElementById('btnEdit').addEventListener('click', () => {
             contextMenu.classList.remove('show');
             const recipeToEdit = recipes.find(r => r.id === activeRecipeId);
-
             document.getElementById('formModalTitle').textContent = "Edit Recipe";
             document.getElementById('titleInput').value = recipeToEdit.title;
             document.getElementById('tagsInput').value = (recipeToEdit.tags || []).join(', ');
             document.getElementById('imageInput').value = recipeToEdit.image;
             document.getElementById('ingredientsInput').value = recipeToEdit.ingredients.join('\n');
             document.getElementById('stepsInput').value = recipeToEdit.steps.join('\n');
-
             formModal.showModal();
             lockScroll();
         });
 
-        document.getElementById('btnDelete').addEventListener('click', () => {
+        document.getElementById('btnDelete').addEventListener('click', async () => {
             contextMenu.classList.remove('show');
             if (confirm("Are you sure you want to delete this recipe?")) {
-                recipes = recipes.filter(r => r.id !== activeRecipeId);
-                localStorage.setItem('myRecipes', JSON.stringify(recipes));
-                renderRecipes();
+                await deleteDoc(doc(db, "recipes", activeRecipeId));
             }
         });
 
@@ -589,43 +477,29 @@
             lockScroll();
         });
 
-        document.getElementById('recipeForm').addEventListener('submit', (e) => {
+        document.getElementById('recipeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const title = document.getElementById('titleInput').value;
             const image = document.getElementById('imageInput').value;
             const tagsRaw = document.getElementById('tagsInput').value;
-            // Map the tags but convert the first letter of each word to uppercase for consistency!
             const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t !== '').map(t => t.charAt(0).toUpperCase() + t.slice(1));
-
             const ingredients = document.getElementById('ingredientsInput').value.split('\n').map(i => i.trim()).filter(i => i);
             const steps = document.getElementById('stepsInput').value.split('\n').map(s => s.trim()).filter(s => s);
 
+            const recipeData = { title, tags, image, ingredients, steps };
+
             if (activeRecipeId) {
-                const recipeIndex = recipes.findIndex(r => r.id === activeRecipeId);
-                recipes[recipeIndex] = { ...recipes[recipeIndex], title, tags, image, ingredients, steps };
+                await updateDoc(doc(db, "recipes", activeRecipeId), recipeData);
             } else {
-                recipes.push({ id: Date.now(), title, tags, image, ingredients, steps });
+                await addDoc(recipesCollection, recipeData);
             }
 
-            localStorage.setItem('myRecipes', JSON.stringify(recipes));
-            renderRecipes();
             formModal.close();
-        });
-
-        document.getElementById('btnExport').addEventListener('click', () => {
-            const jsCode = `const defaultRecipes = ${JSON.stringify(recipes, null, 4)};`;
-            document.getElementById('exportArea').value = jsCode;
-            exportModal.showModal();
-            lockScroll();
         });
 
         document.getElementById('closeFormModal').addEventListener('click', () => formModal.close());
         document.getElementById('closeViewModal').addEventListener('click', () => viewModal.close());
-        document.getElementById('closeExportModal').addEventListener('click', () => exportModal.close());
-
-        // Kick everything off!
-        renderRecipes();
     </script>
 </body>
 </html>
