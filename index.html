@@ -19,6 +19,7 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -30,7 +31,6 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- SCROLL LOCK CLASS --- */
         body.no-scroll {
             overflow: hidden;
         }
@@ -152,11 +152,37 @@
             overflow-y: auto;
         }
 
+        /* --- ZOOM IN ANIMATION --- */
+        dialog[open] {
+            animation: modalZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
         dialog::backdrop {
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
+
+        dialog[open]::backdrop {
+            animation: backdropFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes modalZoomIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%) scale(0.85); /* Start slightly lower and smaller */
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes backdropFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* ----------------------- */
 
         .modal-header { position: relative; }
 
@@ -206,9 +232,8 @@
         .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; }
         #exportArea { font-family: monospace; font-size: 0.8rem; height: 150px; margin-top: 1rem; }
 
-        /* --- UPDATED CONTEXT MENU --- */
         #contextMenu {
-            visibility: hidden; /* Changed from display:none so we can calculate its size accurately */
+            visibility: hidden;
             position: absolute;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -221,7 +246,7 @@
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
             display: flex;
             flex-direction: column;
-            width: max-content; /* Ensures it sizes perfectly to the text */
+            width: max-content;
         }
 
         #contextMenu.show {
@@ -333,11 +358,9 @@
         const exportModal = document.getElementById('exportModal');
         const contextMenu = document.getElementById('contextMenu');
 
-        // --- SCROLL LOCKING LOGIC ---
         function lockScroll() { document.body.classList.add('no-scroll'); }
         function unlockScroll() { document.body.classList.remove('no-scroll'); }
 
-        // Automatically unlock scroll whenever ANY dialog closes (either by button or background click)
         document.querySelectorAll('dialog').forEach(dialog => {
             dialog.addEventListener('close', unlockScroll);
         });
@@ -411,31 +434,25 @@
             recipe.steps.forEach(step => document.getElementById('viewSteps').innerHTML += `<li>${step}</li>`);
 
             viewModal.showModal();
-            lockScroll(); // Lock scroll when opening
+            lockScroll();
         }
 
-        // Close when clicking outside of the modal
         document.querySelectorAll('dialog').forEach(dialog => {
             dialog.addEventListener('click', (e) => {
                 const rect = dialog.getBoundingClientRect();
                 if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
-                    dialog.close(); // Triggers the 'close' event listener which unlocks the scroll
+                    dialog.close();
                 }
             });
         });
 
-        // --- SMART CONTEXT MENU POSITIONING ---
         function showContextMenu(x, y, id) {
             activeRecipeId = id;
 
-            // Get the exact width/height of the menu
             const rect = contextMenu.getBoundingClientRect();
-
-            // Calculate top-left placement with a 15px buffer from the finger
             let posX = x - rect.width - 15;
             let posY = y - rect.height - 15;
 
-            // Boundary Protection: If clicking too close to the left/top edges, flip it so it isn't cut off
             if (posX < 10) posX = x + 15;
             if (posY < 10) posY = y + 15;
 
@@ -463,7 +480,7 @@
             document.getElementById('stepsInput').value = recipeToEdit.steps.join('\n');
 
             formModal.showModal();
-            lockScroll(); // Lock scroll
+            lockScroll();
         });
 
         document.getElementById('btnDelete').addEventListener('click', () => {
@@ -480,7 +497,7 @@
             document.getElementById('formModalTitle').textContent = "New Recipe";
             document.getElementById('recipeForm').reset();
             formModal.showModal();
-            lockScroll(); // Lock scroll
+            lockScroll();
         });
 
         document.getElementById('recipeForm').addEventListener('submit', (e) => {
@@ -502,14 +519,14 @@
 
             localStorage.setItem('myRecipes', JSON.stringify(recipes));
             renderRecipes();
-            formModal.close(); // Triggers the 'close' event which unlocks the scroll
+            formModal.close();
         });
 
         document.getElementById('btnExport').addEventListener('click', () => {
             const jsCode = `const defaultRecipes = ${JSON.stringify(recipes, null, 4)};`;
             document.getElementById('exportArea').value = jsCode;
             exportModal.showModal();
-            lockScroll(); // Lock scroll
+            lockScroll();
         });
 
         document.getElementById('closeFormModal').addEventListener('click', () => formModal.close());
