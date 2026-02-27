@@ -24,7 +24,7 @@ const defaultRecipes = [
   {
     "id": 1772182250092,
     "title": "Spinat Wähe 🥬🥧",
-    "image": "",
+    "image": "https://images.lecker.de/vegetarischer-flammkuchen-b/1x1,id=204e34aa,b=lecker,w=1600,h=,ca=17,4.27,84.6,94.13,rm=sk.jpeg",
     "ingredients": [
       "Blätterteig",
       "Käse (geraffelt)",

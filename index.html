@@ -152,7 +152,7 @@
             overflow-y: auto;
         }
 
-        /* --- ZOOM IN ANIMATION --- */
+        /* --- FIXED ZOOM IN ANIMATION --- */
         dialog[open] {
             animation: modalZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -170,11 +170,11 @@
         @keyframes modalZoomIn {
             from {
                 opacity: 0;
-                transform: translate(-50%, -40%) scale(0.85); /* Start slightly lower and smaller */
+                transform: scale(0.9) translateY(20px); /* Just scales down slightly and slides up */
             }
             to {
                 opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
+                transform: scale(1) translateY(0); /* Lands perfectly in its native centered spot */
             }
         }
 
