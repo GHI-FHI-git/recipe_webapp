@@ -216,7 +216,6 @@
     <header>
         <h1>Recipes</h1>
         <div class="header-buttons">
-            <button class="btn-migrate" id="btnMigrate">Migrate Old Recipes</button>
             <button class="btn-add" id="openAddModal" title="Add Recipe">+</button>
         </div>
     </header>
@@ -267,8 +266,6 @@
         </div>
     </dialog>
 
-    <script src="recipes.js"></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -296,36 +293,6 @@
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
         const contextMenu = document.getElementById('contextMenu');
-
-        // --- MIGRATION LOGIC ---
-        document.getElementById('btnMigrate').addEventListener('click', async () => {
-            // Check browser storage first, then the old recipes.js file
-            const oldRecipes = JSON.parse(localStorage.getItem('myRecipes')) || (typeof defaultRecipes !== 'undefined' ? defaultRecipes : []);
-
-            if (oldRecipes.length === 0) {
-                alert("No old recipes found to migrate!");
-                return;
-            }
-
-            if (confirm(`Found ${oldRecipes.length} old recipes. Do you want to copy them to your new cloud database?`)) {
-                // Change button text to show it's working
-                document.getElementById('btnMigrate').textContent = "Uploading...";
-
-                for (const recipe of oldRecipes) {
-                    const recipeData = {
-                        title: recipe.title || "Untitled Recipe",
-                        tags: recipe.tags || [],
-                        image: recipe.image || "",
-                        ingredients: recipe.ingredients || [],
-                        steps: recipe.steps || []
-                    };
-                    await addDoc(recipesCollection, recipeData);
-                }
-
-                alert("Migration complete! All your old recipes are now in Firebase.\n\nNext Step: Delete the 'btnMigrate' button from your HTML code, and delete your old 'recipes.js' file entirely.");
-                document.getElementById('btnMigrate').style.display = 'none'; // Hide button after success
-            }
-        });
 
         onSnapshot(recipesCollection, (snapshot) => {
             recipes = snapshot.docs.map(doc => ({
