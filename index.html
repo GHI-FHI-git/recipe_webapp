@@ -39,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem; /* Slightly reduced to make room for the filter bar */
         }
 
         h1 {
@@ -83,6 +83,32 @@
 
         .btn-add:hover { transform: scale(1.05); }
 
+        /* --- FILTER BAR STYLES --- */
+        #filterBar {
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem; /* Room for drop shadows */
+        }
+
+        .filter-chip {
+            cursor: pointer;
+            font-size: 0.8rem; /* Slightly larger than normal card tags */
+            padding: 8px 16px;
+            opacity: 0.4; /* Faded when not selected */
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .filter-chip:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        .filter-chip.active {
+            opacity: 1;
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        /* ----------------------- */
+
         .recipe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -122,8 +148,7 @@
         .tags-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 8px; /* Slight increase in gap for readability */
         }
 
         .tag-chip {
@@ -152,7 +177,6 @@
             overflow-y: auto;
         }
 
-        /* --- FIXED ZOOM IN ANIMATION --- */
         dialog[open] {
             animation: modalZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -168,21 +192,14 @@
         }
 
         @keyframes modalZoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px); /* Just scales down slightly and slides up */
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0); /* Lands perfectly in its native centered spot */
-            }
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         @keyframes backdropFadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        /* ----------------------- */
 
         .modal-header { position: relative; }
 
@@ -284,6 +301,8 @@
         </div>
     </header>
 
+    <div id="filterBar" class="tags-container"></div>
+
     <main class="recipe-grid" id="recipeGrid"></main>
 
     <div id="contextMenu">
@@ -298,7 +317,7 @@
         </div>
         <div class="modal-body">
             <h2 class="modal-title" id="viewTitle">Title</h2>
-            <div class="tags-container" id="viewTags"></div>
+            <div class="tags-container" id="viewTags" style="margin-top: 0;"></div>
             <h3>Ingredients</h3><ul id="viewIngredients"></ul>
             <h3>Steps</h3><ol id="viewSteps"></ol>
         </div>
@@ -346,13 +365,23 @@
                 image: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=800&q=80",
                 ingredients: ["2 slices sourdough bread", "1 ripe avocado", "Cherry tomatoes", "Salt, pepper"],
                 steps: ["Toast the bread.", "Mash the avocado.", "Spread and season."]
+            },
+            {
+                id: 2,
+                title: "Iced Matcha Latte",
+                tags: ["Drinks", "Quick"],
+                image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=800&q=80",
+                ingredients: ["1 tsp matcha powder", "2 oz hot water", "1 cup milk", "Ice"],
+                steps: ["Whisk matcha and hot water.", "Add ice to glass.", "Pour milk over ice.", "Top with matcha."]
             }
         ];
 
         let recipes = JSON.parse(localStorage.getItem('myRecipes')) || (typeof defaultRecipes !== 'undefined' ? defaultRecipes : fallbackRecipes);
         let activeRecipeId = null;
+        let activeFilter = null; // Keeps track of which tag we are currently filtering by
 
         const recipeGrid = document.getElementById('recipeGrid');
+        const filterBar = document.getElementById('filterBar');
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
         const exportModal = document.getElementById('exportModal');
@@ -374,6 +403,57 @@
             return `hsl(${hue}, 80%, 45%)`;
         }
 
+        // Extracts all unique tags from all recipes
+        function getUniqueTags() {
+            const allTags = new Set();
+            recipes.forEach(recipe => {
+                if (recipe.tags) {
+                    recipe.tags.forEach(tag => allTags.add(tag));
+                }
+            });
+            // Sort them alphabetically so they always appear in the same order
+            return Array.from(allTags).sort();
+        }
+
+        // Renders the clickable chips under the header
+        function renderFilterBar() {
+            filterBar.innerHTML = '';
+            const uniqueTags = getUniqueTags();
+
+            if (uniqueTags.length === 0) return; // Hide if no tags exist at all
+
+            // Create the "All" button
+            const allBtn = document.createElement('span');
+            allBtn.className = `tag-chip filter-chip ${activeFilter === null ? 'active' : ''}`;
+            allBtn.style.backgroundColor = 'var(--text-main)'; // A solid dark color for 'All'
+            allBtn.textContent = 'All';
+            allBtn.addEventListener('click', () => {
+                activeFilter = null;
+                renderRecipes();
+            });
+            filterBar.appendChild(allBtn);
+
+            // Create a button for each unique tag
+            uniqueTags.forEach(tag => {
+                const btn = document.createElement('span');
+                btn.className = `tag-chip filter-chip ${activeFilter === tag ? 'active' : ''}`;
+                btn.style.backgroundColor = getVibrantColor(tag);
+                btn.textContent = tag;
+
+                btn.addEventListener('click', () => {
+                    // Toggle off if you click the tag that is already active
+                    if (activeFilter === tag) {
+                        activeFilter = null;
+                    } else {
+                        activeFilter = tag;
+                    }
+                    renderRecipes(); // Re-draw the grid
+                });
+
+                filterBar.appendChild(btn);
+            });
+        }
+
         function generateTagsHTML(tagsArray) {
             if (!tagsArray || tagsArray.length === 0) return '';
             return tagsArray.map(tag => {
@@ -384,7 +464,13 @@
 
         function renderRecipes() {
             recipeGrid.innerHTML = '';
-            recipes.forEach(recipe => {
+
+            // First, filter the recipes based on the activeFilter!
+            const recipesToShow = activeFilter
+                ? recipes.filter(r => r.tags && r.tags.includes(activeFilter))
+                : recipes;
+
+            recipesToShow.forEach(recipe => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 const safeTags = recipe.tags || [];
@@ -419,6 +505,9 @@
 
                 recipeGrid.appendChild(card);
             });
+
+            // Make sure the filter bar updates its active states and catches any newly added tags
+            renderFilterBar();
         }
 
         function openViewModal(recipe) {
@@ -506,7 +595,9 @@
             const title = document.getElementById('titleInput').value;
             const image = document.getElementById('imageInput').value;
             const tagsRaw = document.getElementById('tagsInput').value;
-            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t !== '');
+            // Map the tags but convert the first letter of each word to uppercase for consistency!
+            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t !== '').map(t => t.charAt(0).toUpperCase() + t.slice(1));
+
             const ingredients = document.getElementById('ingredientsInput').value.split('\n').map(i => i.trim()).filter(i => i);
             const steps = document.getElementById('stepsInput').value.split('\n').map(s => s.trim()).filter(s => s);
 
@@ -533,6 +624,7 @@
         document.getElementById('closeViewModal').addEventListener('click', () => viewModal.close());
         document.getElementById('closeExportModal').addEventListener('click', () => exportModal.close());
 
+        // Kick everything off!
         renderRecipes();
     </script>
 </body>
