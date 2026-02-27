@@ -26,7 +26,7 @@ const defaultRecipes = [
     },
     {
         "id": 1772182250092,
-        "title": "Spinat Wähe 🥬🥧",
+        "title": "Spinat Wähe",
         "image": "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/FCAC8BC9-0DF3-49B7-8137-2890696F1617/Derivates/e467a4e5-e1bf-43f4-b292-ade4e04e8e52.jpg",
         "ingredients": [
             "Blätterteig",
