@@ -132,11 +132,10 @@
             gap: 1.5rem;
         }
 
-        /* --- NEUER DEZENTER RAHMEN FÜR DIE KARTEN --- */
         .card {
             background-color: var(--card-bg);
             border-radius: var(--radius);
-            border: 1px solid rgba(0, 0, 0, 0.08); /* Der Rahmen! */
+            border: 1px solid rgba(0, 0, 0, 0.08);
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.04);
             cursor: pointer;
@@ -154,7 +153,6 @@
         .card-content { padding: 1.2rem; }
         .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
 
-        /* Globale Animationsgeschwindigkeit für die View Transitions anpassen */
         ::view-transition-group(*) {
             animation-duration: 0.35s;
         }
@@ -205,6 +203,22 @@
             display: flex; justify-content: space-between; align-items: flex-end;
             margin-top: 1.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;
         }
+
+        /* --- EXPORT BUTTON --- */
+        .btn-share {
+            background-color: var(--card-bg);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .btn-share:hover { background-color: var(--accent); color: white; }
 
         h3 { font-size: 1.2rem; color: var(--accent); margin: 0; }
         ul, ol { margin-left: 1.5rem; line-height: 1.6; }
@@ -260,7 +274,9 @@
         .loading-state { text-align: center; color: var(--text-muted); margin-top: 2rem; font-style: italic; }
 
         @media (max-width: 600px) {
-            .recipe-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            body { padding: 1rem 3%; }
+            dialog { width: 94%; }
+            .recipe-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
             .card-img { height: 130px; }
             .card-content { padding: 0.8rem; }
             .card-title { font-size: 1.1rem; margin-bottom: 0.2rem; }
@@ -311,10 +327,15 @@
 
                 <div class="ingredients-header">
                     <h3>Zutaten</h3>
-                    <div class="portions-control" id="portionsControlWrapper">
-                        <button id="btnMinusPortion">−</button>
-                        <span id="viewPortionsCount">1 Portion</span>
-                        <button id="btnPlusPortion">+</button>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button id="btnShareIngredients" class="btn-share" title="Zutaten exportieren/teilen">🛒 Export</button>
+
+                        <div class="portions-control" id="portionsControlWrapper">
+                            <button id="btnMinusPortion">−</button>
+                            <span id="viewPortionsCount">1 Portion</span>
+                            <button id="btnPlusPortion">+</button>
+                        </div>
                     </div>
                 </div>
 
@@ -397,7 +418,7 @@
         let currentEditImageUrl = "";
         let activeViewRecipe = null;
         let currentViewPortions = 1;
-        let isTransitioning = false; // Flag für unsere Such-Animation
+        let isTransitioning = false;
 
         const recipeGrid = document.getElementById('recipeGrid');
         const filterBar = document.getElementById('filterBar');
@@ -406,9 +427,7 @@
         const contextMenu = document.getElementById('contextMenu');
         const submitBtn = document.getElementById('submitBtn');
 
-        // --- ANIMIERTE SUCHE & FILTER ---
         function renderRecipes() {
-            // Wenn der Browser View Transitions unterstützt und gerade keine läuft
             if (document.startViewTransition && !isTransitioning) {
                 isTransitioning = true;
                 const transition = document.startViewTransition(() => {
@@ -418,7 +437,6 @@
                     isTransitioning = false;
                 });
             } else {
-                // Fallback für Firefox/Safari (alt) oder wenn sehr schnell getippt wird
                 buildGrid();
             }
         }
@@ -487,7 +505,6 @@
             return tagsArray.map(tag => `<span class="tag-chip" style="--hue: ${getHue(tag)};">${tag}</span>`).join('');
         }
 
-        // --- GRID BAUEN (Tatsächlicher DOM-Austausch) ---
         function buildGrid() {
             recipeGrid.innerHTML = '';
 
@@ -509,7 +526,6 @@
             recipesToShow.forEach(recipe => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // WICHTIG: Die ID, an der der Browser erkennt, wie die Karte verschoben/animiert wird
                 card.style.viewTransitionName = `recipe-card-${recipe.id}`;
 
                 card.innerHTML = `
@@ -623,6 +639,50 @@
         document.getElementById('btnPlusPortion').addEventListener('click', () => {
             currentViewPortions++;
             renderScaledIngredients();
+        });
+
+        // --- ZUTATEN EXPORT/TEILEN LOGIK ---
+        document.getElementById('btnShareIngredients').addEventListener('click', async () => {
+            if (!activeViewRecipe) return;
+
+            // 1. Wir berechnen die aktuellen Zutatenmengen als einfachen Text
+            const hasPortions = activeViewRecipe.hasPortions !== false;
+            const originalPortions = activeViewRecipe.portions || 1;
+            const ratio = hasPortions ? (currentViewPortions / originalPortions) : 1;
+
+            let exportText = `Zutaten für ${activeViewRecipe.title}:\n\n`;
+
+            activeViewRecipe.ingredients.forEach(ing => {
+                const parsed = parseIngredient(ing);
+                let displayText = ing;
+                if (hasPortions && parsed.qty !== null) {
+                    let newQty = parsed.qty * ratio;
+                    newQty = Math.round(newQty * 100) / 100;
+                    let qtyString = newQty.toString().replace('.', ',');
+                    displayText = `${qtyString} ${parsed.text}`;
+                }
+                exportText += `- ${displayText}\n`;
+            });
+
+            // 2. Wir versuchen das native "Teilen" Menü des Handys aufzurufen
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `Einkaufsliste: ${activeViewRecipe.title}`,
+                        text: exportText
+                    });
+                } catch (err) {
+                    console.log("Teilen abgebrochen oder fehlgeschlagen", err);
+                }
+            } else {
+                // 3. Fallback: Wenn wir am Desktop sind, kopieren wir es in die Zwischenablage
+                try {
+                    await navigator.clipboard.writeText(exportText);
+                    alert("Zutaten in die Zwischenablage kopiert!\n\nDu kannst sie jetzt in Todoist, Bring! oder Notizen einfügen.");
+                } catch (err) {
+                    alert("Konnte Zutaten nicht kopieren.");
+                }
+            }
         });
 
         document.querySelectorAll('dialog').forEach(dialog => {
