@@ -7,6 +7,10 @@
 
     <link rel="icon" type="image/png" href="favicon.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --bg-color: #f4f4f6;
@@ -21,7 +25,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: "Comic Relief", "Comic Sans MS", "Chalkboard SE", "Comic Sans", cursive, sans-serif;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -32,6 +36,7 @@
             max-width: 1200px;
             margin: 0 auto;
             overscroll-behavior-y: none;
+            font-weight: 700;
         }
 
         body.no-scroll { overflow: hidden; }
@@ -47,7 +52,7 @@
 
         h1 {
             font-size: 2.5rem;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: -0.5px;
             margin: 0;
         }
@@ -59,6 +64,7 @@
             border: 1px solid #d1d1d6;
             border-radius: 999px;
             font-size: 1rem;
+            font-weight: 700;
             background-color: var(--card-bg);
             transition: all 0.2s ease;
         }
@@ -94,7 +100,7 @@
         .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
 
         .tag-chip {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
             padding: 4px 10px;
             border-radius: 999px;
@@ -107,7 +113,7 @@
 
         .filter-chip {
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             padding: 8px 16px;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background-color: hsl(var(--hue), 60%, 90%);
@@ -153,9 +159,7 @@
         .card-content { padding: 1.2rem; }
         .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
 
-        ::view-transition-group(*) {
-            animation-duration: 0.35s;
-        }
+        ::view-transition-group(*) { animation-duration: 0.35s; }
 
         dialog {
             border: none;
@@ -197,14 +201,13 @@
         .modal-steps-col { padding: 0 1.5rem 1.5rem 1.5rem; }
 
         .modal-body { padding: 2rem; }
-        .modal-title { font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2; }
+        .modal-title { font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2; font-weight: 700; }
 
         .ingredients-header {
             display: flex; justify-content: space-between; align-items: flex-end;
             margin-top: 1.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;
         }
 
-        /* --- EXPORT BUTTON --- */
         .btn-share {
             background-color: var(--card-bg);
             color: var(--accent);
@@ -212,7 +215,7 @@
             border-radius: 20px;
             padding: 4px 12px;
             font-size: 0.85rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -220,7 +223,7 @@
         }
         .btn-share:hover { background-color: var(--accent); color: white; }
 
-        h3 { font-size: 1.2rem; color: var(--accent); margin: 0; }
+        h3 { font-size: 1.2rem; color: var(--accent); margin: 0; font-weight: 700; }
         ul, ol { margin-left: 1.5rem; line-height: 1.6; }
         li { margin-bottom: 0.5rem; }
 
@@ -230,10 +233,10 @@
         .portions-control button {
             background: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1.2rem;
             color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; font-weight: 700;
         }
         .portions-control button:active { transform: scale(0.9); }
-        .portions-control span { font-weight: bold; font-size: 0.9rem; min-width: 80px; text-align: center; }
+        .portions-control span { font-weight: 700; font-size: 0.9rem; min-width: 80px; text-align: center; }
 
         form { display: flex; flex-direction: column; gap: 1rem; }
         .form-row { display: flex; gap: 1rem; }
@@ -241,37 +244,72 @@
         .form-col-side { width: 90px; }
         .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: -0.5rem; }
 
-        label { font-weight: 600; font-size: 0.9rem; }
-        input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 1rem; font-family: inherit; }
+        label { font-weight: 700; font-size: 0.9rem; }
+        input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 1rem; font-family: inherit; font-weight: 700; }
         input[type="checkbox"] { width: auto; transform: scale(1.2); cursor: pointer; }
-        input[type="file"] { padding: 0.5rem; background: #f4f4f6; border: 1px dashed #d1d1d6; cursor: pointer; }
+        input[type="file"] { padding: 0.5rem; background: #f4f4f6; border: 1px dashed #d1d1d6; cursor: pointer; font-weight: 700; }
         input:disabled { background-color: #e5e5ea; color: #8e8e93; cursor: not-allowed; }
         input:focus, textarea:focus { outline: none; border-color: var(--accent); }
         textarea { resize: vertical; min-height: 100px; }
 
         .btn-submit {
             background-color: var(--accent); color: white; border: none; border-radius: 10px;
-            padding: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: background-color 0.2s;
+            padding: 1rem; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 1rem; transition: background-color 0.2s;
         }
         .btn-submit:disabled { background-color: #d1d1d6; cursor: not-allowed; }
-        .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; }
+        .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; font-weight: 400; }
 
+        /* --- PINTEREST-STYLE CONTEXT MENU --- */
         #contextMenu {
-            visibility: hidden; position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; z-index: 100;
-            transform: scale(0.9); opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-            display: flex; flex-direction: column; width: max-content;
+            visibility: hidden;
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+            z-index: 100;
+            display: flex;
+            flex-direction: row;
+            padding: 8px;
+            gap: 6px;
+
+            transform: scale(0.4) translateY(20px);
+            opacity: 0;
+            transform-origin: bottom center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
         }
 
-        #contextMenu.show { visibility: visible; transform: scale(1); opacity: 1; }
-        .context-btn {
-            background: none; border: none; padding: 12px 20px; font-size: 1rem; text-align: left; cursor: pointer;
-            font-weight: 500; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px;
+        #contextMenu.show {
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            opacity: 1;
         }
-        .context-btn:last-child { border-bottom: none; }
-        .context-btn:hover { background: #f4f4f6; }
+
+        .context-btn {
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            min-width: 85px;
+        }
+
+        .context-btn:hover { background: rgba(0,0,0,0.05); transform: translateY(-2px); }
+        .context-btn:active { transform: scale(0.95); }
+        .context-icon { font-size: 1.6rem; line-height: 1; }
+        .context-label { font-size: 0.75rem; }
         .context-btn.delete { color: #ff3b30; }
-        .loading-state { text-align: center; color: var(--text-muted); margin-top: 2rem; font-style: italic; }
+
+        .loading-state { text-align: center; color: var(--text-muted); margin-top: 2rem; font-style: italic; font-weight: 400; }
 
         @media (max-width: 600px) {
             body { padding: 1rem 3%; }
@@ -309,8 +347,14 @@
     </main>
 
     <div id="contextMenu">
-        <button class="context-btn" id="btnEdit">✏️ Bearbeiten</button>
-        <button class="context-btn delete" id="btnDelete">🗑️ Löschen</button>
+        <button class="context-btn" id="btnEdit">
+            <span class="context-icon">✏️</span>
+            <span class="context-label">Bearbeiten</span>
+        </button>
+        <button class="context-btn delete" id="btnDelete">
+            <span class="context-icon">🗑️</span>
+            <span class="context-label">Löschen</span>
+        </button>
     </div>
 
     <dialog id="viewModal">
@@ -536,12 +580,25 @@
                     </div>
                 `;
 
-                card.addEventListener('click', () => { if (!contextMenu.classList.contains('show')) openViewModal(recipe); });
-                card.addEventListener('contextmenu', (e) => { e.preventDefault(); showContextMenu(e.pageX, e.pageY, recipe.id); });
+                card.addEventListener('click', (e) => {
+                    // Wenn das Menü offen ist, schließt der Klick nur das Menü
+                    if (contextMenu.classList.contains('show')) {
+                        contextMenu.classList.remove('show');
+                        return;
+                    }
+                    openViewModal(recipe);
+                });
+
+                card.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e.pageX, e.pageY, recipe.id);
+                });
 
                 let touchTimer;
                 card.addEventListener('touchstart', (e) => {
-                    touchTimer = setTimeout(() => { showContextMenu(e.touches[0].pageX, e.touches[0].pageY, recipe.id); }, 500);
+                    touchTimer = setTimeout(() => {
+                        showContextMenu(e.touches[0].pageX, e.touches[0].pageY, recipe.id);
+                    }, 500);
                 });
                 card.addEventListener('touchend', () => clearTimeout(touchTimer));
                 card.addEventListener('touchmove', () => clearTimeout(touchTimer));
@@ -641,11 +698,9 @@
             renderScaledIngredients();
         });
 
-        // --- ZUTATEN EXPORT/TEILEN LOGIK ---
         document.getElementById('btnShareIngredients').addEventListener('click', async () => {
             if (!activeViewRecipe) return;
 
-            // 1. Wir berechnen die aktuellen Zutatenmengen als einfachen Text
             const hasPortions = activeViewRecipe.hasPortions !== false;
             const originalPortions = activeViewRecipe.portions || 1;
             const ratio = hasPortions ? (currentViewPortions / originalPortions) : 1;
@@ -664,7 +719,6 @@
                 exportText += `- ${displayText}\n`;
             });
 
-            // 2. Wir versuchen das native "Teilen" Menü des Handys aufzurufen
             if (navigator.share) {
                 try {
                     await navigator.share({
@@ -675,7 +729,6 @@
                     console.log("Teilen abgebrochen oder fehlgeschlagen", err);
                 }
             } else {
-                // 3. Fallback: Wenn wir am Desktop sind, kopieren wir es in die Zwischenablage
                 try {
                     await navigator.clipboard.writeText(exportText);
                     alert("Zutaten in die Zwischenablage kopiert!\n\nDu kannst sie jetzt in Todoist, Bring! oder Notizen einfügen.");
@@ -685,30 +738,50 @@
             }
         });
 
-        document.querySelectorAll('dialog').forEach(dialog => {
-            dialog.addEventListener('click', (e) => {
-                const rect = dialog.getBoundingClientRect();
-                if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) dialog.close();
-            });
-        });
-
+        // --- REPARIERTE LOGIK FÜR DAS KONTEXTMENÜ ---
         function showContextMenu(x, y, id) {
             activeRecipeId = id;
+
+            // Um die volle, unskalierte Größe berechnen zu können, schalten wir die Animation
+            // kurz aus und setzen das Menü ins DOM (ohne Sichtbarkeits-Hacks!)
+            contextMenu.style.transition = 'none';
+            contextMenu.classList.add('show');
+
             const rect = contextMenu.getBoundingClientRect();
-            let posX = x - rect.width - 15;
-            let posY = y - rect.height - 15;
-            if (posX < 10) posX = x + 15;
-            if (posY < 10) posY = y + 15;
-            contextMenu.style.left = `${posX}px`; contextMenu.style.top = `${posY}px`;
+
+            // Direkt wieder schließen
+            contextMenu.classList.remove('show');
+
+            // Jetzt berechnen wir die perfekten X/Y Koordinaten
+            let posX = x - (rect.width / 2);
+            let posY = y - rect.height - 20;
+
+            if (posX < 10) posX = 10;
+            if (posX + rect.width > window.innerWidth - 10) posX = window.innerWidth - rect.width - 10;
+
+            if (posY < 10) {
+                posY = y + 30;
+                contextMenu.style.transformOrigin = 'top center';
+            } else {
+                contextMenu.style.transformOrigin = 'bottom center';
+            }
+
+            contextMenu.style.left = `${posX}px`;
+            contextMenu.style.top = `${posY}px`;
+
+            // Zwingt den Browser, die neuen Koordinaten zu laden, bevor die Animation startet
+            contextMenu.offsetHeight;
+
+            // Animation wieder einschalten und aufpoppen lassen
+            contextMenu.style.transition = '';
             contextMenu.classList.add('show');
         }
 
+        // Klicks außerhalb des Menüs schließen das Menü
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card') && !e.target.closest('#contextMenu')) contextMenu.classList.remove('show');
-        });
-
-        document.getElementById('hasPortionsInput').addEventListener('change', (e) => {
-            document.getElementById('portionsInput').disabled = !e.target.checked;
+            if (!e.target.closest('.card') && !e.target.closest('#contextMenu')) {
+                contextMenu.classList.remove('show');
+            }
         });
 
         document.getElementById('btnEdit').addEventListener('click', () => {
