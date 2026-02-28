@@ -42,6 +42,7 @@
             align-items: center;
             margin-bottom: 1rem;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         h1 {
@@ -51,13 +52,12 @@
             margin: 0;
         }
 
-        /* --- NEUE SUCHLEISTE --- */
         .search-bar {
             flex: 1;
             max-width: 500px;
             padding: 0.8rem 1.2rem;
             border: 1px solid #d1d1d6;
-            border-radius: 999px; /* Pillenform */
+            border-radius: 999px;
             font-size: 1rem;
             background-color: var(--card-bg);
             transition: all 0.2s ease;
@@ -68,13 +68,6 @@
             border-color: var(--accent);
             box-shadow: 0 4px 12px rgba(255, 159, 10, 0.15);
         }
-
-        /* Responsives Design für die Suchleiste auf dem Handy */
-        @media (max-width: 600px) {
-            header { flex-wrap: wrap; }
-            .search-bar { order: 3; min-width: 100%; }
-        }
-        /* ----------------------- */
 
         .btn-add {
             background-color: var(--accent);
@@ -91,7 +84,7 @@
             align-items: center;
             justify-content: center;
             line-height: 1;
-            flex-shrink: 0; /* Verhindert, dass der Button gequetscht wird */
+            flex-shrink: 0;
         }
 
         .btn-add:hover { transform: scale(1.05); }
@@ -121,10 +114,7 @@
             color: hsl(var(--hue), 80%, 25%);
         }
 
-        .filter-chip:hover {
-            transform: translateY(-2px);
-            filter: brightness(0.95);
-        }
+        .filter-chip:hover { transform: translateY(-2px); filter: brightness(0.95); }
 
         .filter-chip.active {
             background-color: hsl(var(--hue), 80%, 45%);
@@ -133,15 +123,8 @@
             box-shadow: 0 6px 12px hsla(var(--hue), 80%, 45%, 0.3);
         }
 
-        .filter-all {
-            background-color: #e5e5ea !important;
-            color: var(--text-main) !important;
-        }
-        .filter-all.active {
-            background-color: var(--text-main) !important;
-            color: white !important;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important;
-        }
+        .filter-all { background-color: #e5e5ea !important; color: var(--text-main) !important; }
+        .filter-all.active { background-color: var(--text-main) !important; color: white !important; box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important; }
 
         .recipe-grid {
             display: grid;
@@ -149,9 +132,11 @@
             gap: 1.5rem;
         }
 
+        /* --- NEUER DEZENTER RAHMEN FÜR DIE KARTEN --- */
         .card {
             background-color: var(--card-bg);
             border-radius: var(--radius);
+            border: 1px solid rgba(0, 0, 0, 0.08); /* Der Rahmen! */
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.04);
             cursor: pointer;
@@ -165,10 +150,14 @@
         }
 
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.08); }
-
         .card-img { width: 100%; height: 200px; object-fit: cover; background-color: #e5e5ea; }
         .card-content { padding: 1.2rem; }
         .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.3rem; }
+
+        /* Globale Animationsgeschwindigkeit für die View Transitions anpassen */
+        ::view-transition-group(*) {
+            animation-duration: 0.35s;
+        }
 
         dialog {
             border: none;
@@ -177,7 +166,7 @@
             padding: 0;
             width: 90%;
             max-width: 600px;
-            height: 85vh;
+            max-height: 85vh;
             margin: auto;
             background: var(--card-bg);
             color: var(--text-main);
@@ -193,31 +182,28 @@
             from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
-
         @keyframes backdropFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .modal-header { position: relative; }
-        .modal-img { width: 100%; height: 300px; object-fit: cover; background-color: #e5e5ea; display: block; }
 
         .btn-close {
             position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px);
             border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer;
             font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: background 0.2s;
+            transition: background 0.2s; z-index: 10;
         }
         .btn-close:hover { background: rgba(255,255,255,1); }
+
+        .modal-desktop-split { display: flex; flex-direction: column; }
+        .modal-image-col { width: 100%; }
+        .modal-img { width: 100%; height: 250px; object-fit: cover; background-color: #e5e5ea; display: block; }
+        .modal-info-col { padding: 1.5rem; }
+        .modal-steps-col { padding: 0 1.5rem 1.5rem 1.5rem; }
 
         .modal-body { padding: 2rem; }
         .modal-title { font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2; }
 
         .ingredients-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: 1.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;
         }
 
         h3 { font-size: 1.2rem; color: var(--accent); margin: 0; }
@@ -225,57 +211,27 @@
         li { margin-bottom: 0.5rem; }
 
         .portions-control {
-            display: inline-flex;
-            align-items: center;
-            background: #f4f4f6;
-            border-radius: 20px;
-            padding: 4px 6px;
+            display: inline-flex; align-items: center; background: #f4f4f6; border-radius: 20px; padding: 4px 6px;
         }
-
         .portions-control button {
-            background: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 1.2rem;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.1s;
+            background: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1.2rem;
+            color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s;
         }
-
         .portions-control button:active { transform: scale(0.9); }
-
-        .portions-control span {
-            font-weight: bold;
-            font-size: 0.9rem;
-            min-width: 80px;
-            text-align: center;
-        }
+        .portions-control span { font-weight: bold; font-size: 0.9rem; min-width: 80px; text-align: center; }
 
         form { display: flex; flex-direction: column; gap: 1rem; }
         .form-row { display: flex; gap: 1rem; }
         .form-col-main { flex: 1; }
         .form-col-side { width: 90px; }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: -0.5rem;
-        }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: -0.5rem; }
 
         label { font-weight: 600; font-size: 0.9rem; }
         input, textarea { width: 100%; padding: 0.8rem; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 1rem; font-family: inherit; }
-
         input[type="checkbox"] { width: auto; transform: scale(1.2); cursor: pointer; }
         input[type="file"] { padding: 0.5rem; background: #f4f4f6; border: 1px dashed #d1d1d6; cursor: pointer; }
         input:disabled { background-color: #e5e5ea; color: #8e8e93; cursor: not-allowed; }
-
         input:focus, textarea:focus { outline: none; border-color: var(--accent); }
         textarea { resize: vertical; min-height: 100px; }
 
@@ -284,7 +240,6 @@
             padding: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: background-color 0.2s;
         }
         .btn-submit:disabled { background-color: #d1d1d6; cursor: not-allowed; }
-
         .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; }
 
         #contextMenu {
@@ -295,7 +250,6 @@
         }
 
         #contextMenu.show { visibility: visible; transform: scale(1); opacity: 1; }
-
         .context-btn {
             background: none; border: none; padding: 12px 20px; font-size: 1rem; text-align: left; cursor: pointer;
             font-weight: 500; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px;
@@ -303,8 +257,25 @@
         .context-btn:last-child { border-bottom: none; }
         .context-btn:hover { background: #f4f4f6; }
         .context-btn.delete { color: #ff3b30; }
-
         .loading-state { text-align: center; color: var(--text-muted); margin-top: 2rem; font-style: italic; }
+
+        @media (max-width: 600px) {
+            .recipe-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .card-img { height: 130px; }
+            .card-content { padding: 0.8rem; }
+            .card-title { font-size: 1.1rem; margin-bottom: 0.2rem; }
+            .tag-chip { font-size: 0.65rem; padding: 3px 6px; }
+            .search-bar { order: 3; max-width: 100%; width: 100%; margin-top: 0.5rem; }
+        }
+
+        @media (min-width: 768px) {
+            #viewModal { max-width: 850px; }
+            .modal-desktop-split { flex-direction: row; }
+            .modal-image-col { flex: 0 0 45%; max-width: 45%; }
+            .modal-img { height: 100%; min-height: 350px; border-radius: 20px 0 0 0; }
+            .modal-info-col { padding: 2rem 2rem 1rem 2rem; flex: 1; }
+            .modal-steps-col { padding: 0 2rem 2rem 2rem; clear: both; }
+        }
     </style>
 </head>
 <body>
@@ -327,36 +298,39 @@
     </div>
 
     <dialog id="viewModal">
-        <div class="modal-header">
-            <img src="" alt="Rezeptbild" class="modal-img" id="viewImg">
-            <button class="btn-close" id="closeViewModal">×</button>
-        </div>
-        <div class="modal-body">
-            <h2 class="modal-title" id="viewTitle">Titel</h2>
-            <div class="tags-container" id="viewTags" style="margin-top: 0;"></div>
+        <button class="btn-close" id="closeViewModal">×</button>
 
-            <div class="ingredients-header">
-                <h3>Zutaten</h3>
-                <div class="portions-control" id="portionsControlWrapper">
-                    <button id="btnMinusPortion">−</button>
-                    <span id="viewPortionsCount">1 Portion</span>
-                    <button id="btnPlusPortion">+</button>
-                </div>
+        <div class="modal-desktop-split">
+            <div class="modal-image-col">
+                <img src="" alt="Rezeptbild" class="modal-img" id="viewImg">
             </div>
 
-            <ul id="viewIngredients"></ul>
+            <div class="modal-info-col">
+                <h2 class="modal-title" id="viewTitle">Titel</h2>
+                <div class="tags-container" id="viewTags" style="margin-top: 0;"></div>
 
-            <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Zubereitung</h3>
+                <div class="ingredients-header">
+                    <h3>Zutaten</h3>
+                    <div class="portions-control" id="portionsControlWrapper">
+                        <button id="btnMinusPortion">−</button>
+                        <span id="viewPortionsCount">1 Portion</span>
+                        <button id="btnPlusPortion">+</button>
+                    </div>
+                </div>
+
+                <ul id="viewIngredients"></ul>
+            </div>
+        </div>
+
+        <div class="modal-steps-col">
+            <h3 style="margin-bottom: 0.5rem;">Zubereitung</h3>
             <ol id="viewSteps"></ol>
         </div>
     </dialog>
 
     <dialog id="formModal">
-        <div class="modal-header">
-            <div style="height: 60px; background: var(--bg-color);"></div>
-            <button class="btn-close" id="closeFormModal">×</button>
-        </div>
-        <div class="modal-body">
+        <button class="btn-close" id="closeFormModal">×</button>
+        <div class="modal-body" style="padding-top: 3.5rem;">
             <h2 class="modal-title" id="formModalTitle">Neues Rezept</h2>
             <form id="recipeForm">
 
@@ -373,7 +347,7 @@
 
                 <div class="checkbox-row">
                     <input type="checkbox" id="hasPortionsInput" checked>
-                    <label for="hasPortionsInput" style="font-weight: normal; cursor: pointer;">Portionen berechnen (deaktivieren für Gewürze, Teige etc.)</label>
+                    <label for="hasPortionsInput" style="font-weight: normal; cursor: pointer;">Portionen berechnen</label>
                 </div>
 
                 <div>
@@ -419,11 +393,11 @@
         let recipes = [];
         let activeRecipeId = null;
         let activeFilter = null;
-        let searchQuery = ""; // Neue Suchvariable
+        let searchQuery = "";
         let currentEditImageUrl = "";
-
         let activeViewRecipe = null;
         let currentViewPortions = 1;
+        let isTransitioning = false; // Flag für unsere Such-Animation
 
         const recipeGrid = document.getElementById('recipeGrid');
         const filterBar = document.getElementById('filterBar');
@@ -432,7 +406,23 @@
         const contextMenu = document.getElementById('contextMenu');
         const submitBtn = document.getElementById('submitBtn');
 
-        // --- SUCHEN-LOGIK ---
+        // --- ANIMIERTE SUCHE & FILTER ---
+        function renderRecipes() {
+            // Wenn der Browser View Transitions unterstützt und gerade keine läuft
+            if (document.startViewTransition && !isTransitioning) {
+                isTransitioning = true;
+                const transition = document.startViewTransition(() => {
+                    buildGrid();
+                });
+                transition.finished.finally(() => {
+                    isTransitioning = false;
+                });
+            } else {
+                // Fallback für Firefox/Safari (alt) oder wenn sehr schnell getippt wird
+                buildGrid();
+            }
+        }
+
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
             renderRecipes();
@@ -497,13 +487,12 @@
             return tagsArray.map(tag => `<span class="tag-chip" style="--hue: ${getHue(tag)};">${tag}</span>`).join('');
         }
 
-        function renderRecipes() {
+        // --- GRID BAUEN (Tatsächlicher DOM-Austausch) ---
+        function buildGrid() {
             recipeGrid.innerHTML = '';
 
-            // 1. Filtern nach Tag
             let recipesToShow = activeFilter ? recipes.filter(r => r.tags && r.tags.includes(activeFilter)) : recipes;
 
-            // 2. Filtern nach Suchbegriff (Titel, Tags ODER Zutaten)
             if (searchQuery) {
                 recipesToShow = recipesToShow.filter(r => {
                     const titleMatch = r.title.toLowerCase().includes(searchQuery);
@@ -520,6 +509,9 @@
             recipesToShow.forEach(recipe => {
                 const card = document.createElement('div');
                 card.className = 'card';
+                // WICHTIG: Die ID, an der der Browser erkennt, wie die Karte verschoben/animiert wird
+                card.style.viewTransitionName = `recipe-card-${recipe.id}`;
+
                 card.innerHTML = `
                     <img src="${recipe.image}" class="card-img" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
                     <div class="card-content">
