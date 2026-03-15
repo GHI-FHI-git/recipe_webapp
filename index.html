@@ -265,72 +265,41 @@
         .btn-submit:disabled { background-color: #d1d1d6; cursor: not-allowed; }
         .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.5rem; font-weight: 400; }
 
-        /* --- MAGIC KI BUTTON STYLING --- */
-        .btn-magic {
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-bottom: 0.5rem;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
+        /* --- TOOL BUTTONS --- */
+        .tools-container {
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem;
+            padding: 1rem; background: #f4f4f6; border-radius: 15px; border: 1px dashed #d1d1d6;
         }
-        .btn-magic:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4); }
+        .tools-title { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 5px; }
+
+        .btn-magic {
+            background: linear-gradient(135deg, #a855f7, #ec4899); color: white; border: none; border-radius: 10px;
+            padding: 0.8rem; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.2); transition: all 0.2s;
+        }
+        .btn-magic:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(168, 85, 247, 0.3); }
         .btn-magic:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .import-row { display: flex; gap: 8px; }
+        .import-input { flex: 1; padding: 0.8rem; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 0.9rem; font-weight: bold; background: white; }
+        .btn-import { background: var(--text-main); color: white; border: none; border-radius: 10px; padding: 0 1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .btn-import:hover { background: var(--accent); }
+        .btn-import:disabled { background: #d1d1d6; cursor: not-allowed; }
         /* ------------------------------- */
 
         #contextMenu {
-            visibility: hidden; 
-            position: absolute; 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 28px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05); 
-            z-index: 100;
-            display: flex; 
-            flex-direction: row; 
-            padding: 8px; 
-            gap: 6px;
-            
-            transform: scale(0.4) translateY(20px); 
-            opacity: 0; 
-            transform-origin: bottom center;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+            visibility: hidden; position: absolute; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05); 
+            z-index: 100; display: flex; flex-direction: row; padding: 8px; gap: 6px; transform: scale(0.4) translateY(20px); opacity: 0; 
+            transform-origin: bottom center; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
         }
-
-        #contextMenu.show { 
-            visibility: visible; 
-            transform: scale(1) translateY(0); 
-            opacity: 1; 
-        }
+        #contextMenu.show { visibility: visible; transform: scale(1) translateY(0); opacity: 1; }
 
         .context-btn {
-            background: transparent; 
-            border: none; 
-            border-radius: 20px; 
-            padding: 14px 20px; 
-            cursor: pointer;
-            font-weight: 700; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 6px; 
-            font-family: inherit;
-            color: var(--text-main);
-            transition: all 0.2s ease;
-            min-width: 85px;
+            background: transparent; border: none; border-radius: 20px; padding: 14px 20px; cursor: pointer;
+            font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: inherit;
+            color: var(--text-main); transition: all 0.2s ease; min-width: 85px;
         }
-
         .context-btn:hover { background: rgba(0,0,0,0.05); transform: translateY(-2px); }
         .context-btn:active { transform: scale(0.95); }
         .context-icon { font-size: 1.6rem; line-height: 1; }
@@ -349,7 +318,6 @@
             .tag-chip { font-size: 0.65rem; padding: 3px 6px; }
             .search-bar { order: 3; max-width: 100%; width: 100%; margin-top: 0.5rem; }
         }
-
         @media (min-width: 768px) {
             #viewModal { max-width: 850px; } 
             .modal-desktop-split { flex-direction: row; }
@@ -375,34 +343,21 @@
     </main>
 
     <div id="contextMenu">
-        <button class="context-btn" id="btnEdit">
-            <span class="context-icon">✏️</span>
-            <span class="context-label">Bearbeiten</span>
-        </button>
-        <button class="context-btn delete" id="btnDelete">
-            <span class="context-icon">🗑️</span>
-            <span class="context-label">Löschen</span>
-        </button>
+        <button class="context-btn" id="btnEdit"><span class="context-icon">✏️</span><span class="context-label">Bearbeiten</span></button>
+        <button class="context-btn delete" id="btnDelete"><span class="context-icon">🗑️</span><span class="context-label">Löschen</span></button>
     </div>
 
     <dialog id="viewModal">
         <button class="btn-close" id="closeViewModal">×</button>
-        
         <div class="modal-desktop-split">
-            <div class="modal-image-col">
-                <img src="" alt="Rezeptbild" class="modal-img" id="viewImg">
-            </div>
-            
+            <div class="modal-image-col"><img src="" alt="Rezeptbild" class="modal-img" id="viewImg"></div>
             <div class="modal-info-col">
                 <h2 class="modal-title" id="viewTitle">Titel</h2>
                 <div class="tags-container" id="viewTags" style="margin-top: 0;"></div>
-                
                 <div class="ingredients-header">
                     <h3>Zutaten</h3>
-                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button id="btnShareIngredients" class="btn-share" title="Zutaten exportieren/teilen">🛒 Export</button>
-                        
                         <div class="portions-control" id="portionsControlWrapper">
                             <button id="btnMinusPortion">−</button>
                             <span id="viewPortionsCount">1 Portion</span>
@@ -410,11 +365,9 @@
                         </div>
                     </div>
                 </div>
-                
                 <ul id="viewIngredients"></ul>
             </div>
         </div>
-        
         <div class="modal-steps-col">
             <h3 style="margin-bottom: 0.5rem;">Zubereitung</h3>
             <ol id="viewSteps"></ol>
@@ -425,24 +378,26 @@
         <button class="btn-close" id="closeFormModal">×</button>
         <div class="modal-body" style="padding-top: 3.5rem;">
             
-            <button type="button" class="btn-magic" id="btnMagicScan">✨ Rezept aus Foto extrahieren</button>
-            <input type="file" id="magicScanFile" accept="image/*" style="display: none;">
-            <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2rem;">
-                Erfordert einen kostenlosen Google Gemini API Key.
+            <div class="tools-container">
+                <div class="tools-title">Import-Tools</div>
+                
+                <div class="import-row">
+                    <input type="url" id="importUrlInput" class="import-input" placeholder="Link (z.B. fooby.ch) einfügen...">
+                    <button type="button" class="btn-import" id="btnImportUrl">📥 Laden</button>
+                </div>
+
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 4px 0;">oder</div>
+
+                <button type="button" class="btn-magic" id="btnMagicScan">✨ Aus Foto extrahieren</button>
+                <input type="file" id="magicScanFile" accept="image/*" style="display: none;">
             </div>
 
             <h2 class="modal-title" id="formModalTitle">Neues Rezept</h2>
             <form id="recipeForm">
                 
                 <div class="form-row">
-                    <div class="form-col-main">
-                        <label>Rezeptname</label>
-                        <input type="text" id="titleInput" required>
-                    </div>
-                    <div class="form-col-side">
-                        <label>Portionen</label>
-                        <input type="number" id="portionsInput" min="1" value="1" required>
-                    </div>
+                    <div class="form-col-main"><label>Rezeptname</label><input type="text" id="titleInput" required></div>
+                    <div class="form-col-side"><label>Portionen</label><input type="number" id="portionsInput" min="1" value="1" required></div>
                 </div>
 
                 <div class="checkbox-row">
@@ -451,14 +406,12 @@
                 </div>
 
                 <div>
-                    <label>Tags</label>
-                    <input type="text" id="tagsInput" placeholder="z.B. Frühstück, Vegan, Schnell">
+                    <label>Tags</label><input type="text" id="tagsInput" placeholder="z.B. Frühstück, Vegan, Schnell">
                     <div class="help-text">Tags mit Kommas trennen.</div>
                 </div>
                 
                 <div>
-                    <label>Rezeptfoto</label>
-                    <input type="file" id="imageFile" accept="image/*">
+                    <label>Rezeptfoto</label><input type="file" id="imageFile" accept="image/*">
                     <div class="help-text" id="imageHelp">Leer lassen, um das bestehende Bild zu behalten.</div>
                 </div>
 
@@ -506,7 +459,134 @@
         const contextMenu = document.getElementById('contextMenu');
         const submitBtn = document.getElementById('submitBtn');
 
-        // --- KI MAGIC SCAN LOGIK (MIT NEUEM MODELL) ---
+        // --- VERBESSERTE LINK IMPORT LOGIK (Proxy + Plan B Scraping) ---
+        const btnImportUrl = document.getElementById('btnImportUrl');
+        const importUrlInput = document.getElementById('importUrlInput');
+
+        btnImportUrl.addEventListener('click', async () => {
+            const url = importUrlInput.value.trim();
+            if (!url) return;
+
+            const originalText = btnImportUrl.textContent;
+            btnImportUrl.textContent = "Lädt...";
+            btnImportUrl.disabled = true;
+
+            try {
+                // Wir probieren einen aggressiveren Proxy (corsproxy.io), der oft Firewalls umgeht
+                let html = "";
+                try {
+                    const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+                    if (!response.ok) throw new Error();
+                    html = await response.text();
+                } catch (e) {
+                    // Fallback auf allorigins raw, falls corsproxy ausfällt
+                    const fallback = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                    if (!fallback.ok) throw new Error("Die Webseite blockiert alle Anfragen (Cloudflare).");
+                    html = await fallback.text();
+                }
+
+                if (html.includes("Cloudflare") || html.includes("Just a moment...")) {
+                    throw new Error("Swissmilk/Fooby hat den Abruf durch ihre Cloudflare-Firewall blockiert.");
+                }
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                
+                // --- PLAN A: Verstecktes JSON-LD suchen ---
+                const scripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'));
+                let recipeData = null;
+
+                for (let script of scripts) {
+                    try {
+                        const json = JSON.parse(script.textContent);
+                        const items = Array.isArray(json) ? json : (json['@graph'] || [json]);
+                        
+                        for (let item of items) {
+                            if (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe'))) {
+                                recipeData = item;
+                                break;
+                            }
+                        }
+                        if (recipeData) break;
+                    } catch(e) {} 
+                }
+
+                // --- PLAN B: Manuelles HTML-Scraping (Falls JSON-LD blockiert wird) ---
+                if (!recipeData) {
+                    const titleObj = doc.querySelector('h1');
+                    const title = titleObj ? titleObj.textContent.trim() : '';
+                    
+                    // Fooby und Swissmilk nutzen oft Klassen mit "ingredient" oder "zutat"
+                    const ingredientNodes = doc.querySelectorAll('[class*="ingredient" i], [class*="zutat" i]');
+                    let ingredients = [];
+                    ingredientNodes.forEach(node => {
+                        const text = node.textContent.replace(/\s+/g, ' ').trim();
+                        // Nur sinnvolle Zutaten-Längen filtern
+                        if (text && text.length > 2 && text.length < 100 && !ingredients.includes(text)) {
+                            ingredients.push(text);
+                        }
+                    });
+                    
+                    if (title && ingredients.length > 0) {
+                        recipeData = {
+                            name: title,
+                            recipeIngredient: ingredients,
+                            recipeInstructions: ["Bitte detaillierte Zubereitung direkt auf der Webseite nachlesen."],
+                            image: doc.querySelector('meta[property="og:image"]')?.content || ""
+                        };
+                    }
+                }
+
+                if (!recipeData) throw new Error("Keine Rezeptdaten gefunden. Die Webseite blockiert vermutlich unsere App.");
+
+                // --- FORMULAR AUSFÜLLEN ---
+                if (recipeData.name) document.getElementById('titleInput').value = recipeData.name;
+                
+                if (recipeData.recipeYield) {
+                    let portions = parseInt(String(recipeData.recipeYield).replace(/\D/g, ''));
+                    if (!isNaN(portions) && portions > 0) document.getElementById('portionsInput').value = portions;
+                }
+
+                if (recipeData.recipeIngredient && Array.isArray(recipeData.recipeIngredient)) {
+                    document.getElementById('ingredientsInput').value = recipeData.recipeIngredient.join('\n');
+                }
+
+                if (recipeData.recipeInstructions) {
+                    let steps = [];
+                    recipeData.recipeInstructions.forEach(inst => {
+                        if (typeof inst === 'string') steps.push(inst);
+                        else if (inst.text) steps.push(inst.text);
+                    });
+                    document.getElementById('stepsInput').value = steps.join('\n\n');
+                }
+
+                if (recipeData.image) {
+                    let imgUrl = "";
+                    if (typeof recipeData.image === 'string') imgUrl = recipeData.image;
+                    else if (Array.isArray(recipeData.image)) imgUrl = recipeData.image[0];
+                    else if (recipeData.image.url) imgUrl = recipeData.image.url;
+
+                    if (imgUrl) {
+                        currentEditImageUrl = imgUrl;
+                        document.getElementById('imageHelp').textContent = "✅ Bild aus dem Link übernommen!";
+                        document.getElementById('imageHelp').style.color = "green";
+                        document.getElementById('imageHelp').style.fontWeight = "bold";
+                    }
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("❌ Fehler beim Link-Import:\n\n" + err.message + "\n\nTipp: Wenn Swissmilk blockiert, mache einfach einen Screenshot der Zutaten und nutze den lila Knopf 'Aus Foto extrahieren'!");
+            } finally {
+                btnImportUrl.textContent = originalText;
+                btnImportUrl.disabled = false;
+                importUrlInput.value = '';
+            }
+        });
+        // ----------------------------------------------
+
+
+        // --- KI MAGIC SCAN LOGIK ---
         const btnMagicScan = document.getElementById('btnMagicScan');
         const magicScanFile = document.getElementById('magicScanFile');
 
@@ -540,8 +620,7 @@
 
                 const mimeType = file.type || 'image/jpeg';
 
-                // HIER WURDE DAS MODELL AUF gemini-2.0-flash GEÄNDERT!
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
