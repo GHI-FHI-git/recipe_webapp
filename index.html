@@ -204,7 +204,7 @@
 
         .modal-desktop-split { display: flex; flex-direction: column; }
         .modal-image-col { width: 100%; }
-        .modal-img { width: 100%; height: 250px; object-fit: cover; background-color: #e5e5ea; display: block; }
+        .modal-img { width: 100%; height: 250px; object-fit: cover; background-color: #e5e5ea; display: block; transition: opacity 0.25s ease;}
         .modal-info-col { padding: 1.5rem; }
 		
 		.modal-info-col,
@@ -649,19 +649,44 @@
         renderRecipes();
     });
 
-    onSnapshot(recipesCollection, (snapshot) => {
-        recipes = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
 
-        if (recipes.length === 0) {
-            recipeGrid.innerHTML = '<div class="loading-state">Noch keine Rezepte vorhanden. Zeit zu kochen!</div>';
-            filterBar.innerHTML = '';
-        } else {
-            renderRecipes();
-        }
-    });
+	function preloadRecipeImages(recipesToPreload, limit = 12) {
+		if (!Array.isArray(recipesToPreload) || recipesToPreload.length === 0) return;
+
+		const imageUrls = recipesToPreload
+			.map(recipe => recipe.image)
+			.filter(Boolean)
+			.slice(0, limit);
+
+		imageUrls.forEach(url => {
+			const img = new Image();
+			img.crossOrigin = "anonymous";
+			img.decoding = "async";
+			img.src = url;
+		});
+	}
+
+
+	onSnapshot(recipesCollection, (snapshot) => {
+		recipes = snapshot.docs.map(doc => ({
+			id: doc.id,
+			...doc.data()
+		}));
+
+		if (recipes.length === 0) {
+			recipeGrid.innerHTML = '<div class="loading-state">Noch keine Rezepte vorhanden. Zeit zu kochen!</div>';
+			filterBar.innerHTML = '';
+		} else {
+			renderRecipes();
+
+			// Warm the browser image cache after the grid is visible.
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(() => preloadRecipeImages(recipes, 12));
+			} else {
+				setTimeout(() => preloadRecipeImages(recipes, 12), 500);
+			}
+		}
+	});
 
     function lockScroll() {
         document.body.classList.add('no-scroll');
@@ -1013,8 +1038,10 @@
 		if (recipe.vibrantColor) {
 			applyRecipeColorData(recipe);
 		}
-
+		
+		
 		viewImg.onload = async function () {
+			viewImg.style.opacity = '1';
 			/*
 				Existing old recipes may not have stored colors yet.
 				For those, extract once, apply, then save to Firestore.
@@ -1037,12 +1064,19 @@
 		};
 
 		viewImg.onerror = function () {
+			viewImg.style.opacity = '1';
+			
 			if (!recipe.vibrantColor) {
 				resetViewModalInlineStyles();
 			}
 		};
 
 		viewImg.crossOrigin = "anonymous";
+
+		// Use the stored vibrant color as a placeholder while the image loads.
+		viewImg.style.backgroundColor = recipe.vibrantColor || '#e5e5ea';
+		viewImg.style.opacity = '0';
+
 		viewImg.removeAttribute('src');
 		viewImg.src = recipe.image;
 
