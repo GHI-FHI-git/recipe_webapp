@@ -206,6 +206,12 @@
         .modal-image-col { width: 100%; }
         .modal-img { width: 100%; height: 250px; object-fit: cover; background-color: #e5e5ea; display: block; }
         .modal-info-col { padding: 1.5rem; }
+		
+		.modal-info-col,
+		.modal-steps-col {
+			transition: background-color 0.25s ease, color 0.25s ease;
+		}
+		
         .modal-steps-col { padding: 0 1.5rem 1.5rem 1.5rem; }
 
         .modal-body { padding: 2rem; }
@@ -840,20 +846,125 @@
         }
     }
 
-    function resetViewModalInlineStyles() {
-        const infoCol = document.querySelector('.modal-info-col');
-        const stepsCol = document.querySelector('.modal-steps-col');
-        const title = document.getElementById('viewTitle');
+	function getPreferredSwatch(swatches) {
+		if (!swatches) return null;
 
-        infoCol.style.backgroundColor = 'var(--card-bg)';
-        stepsCol.style.backgroundColor = 'var(--card-bg)';
+		return (
+			swatches.Vibrant ||
+			swatches.LightVibrant ||
+			swatches.DarkVibrant ||
+			swatches.Muted ||
+			swatches.LightMuted ||
+			swatches.DarkMuted ||
+			null
+		);
+	}
 
-        infoCol.style.color = 'var(--text-main)';
-        stepsCol.style.color = 'var(--text-main)';
+	function swatchToRecipeColorData(swatch) {
+		if (!swatch || !swatch.color) return null;
 
-        title.style.color = '';
-        viewModal.querySelectorAll('h3').forEach(h => h.style.color = '');
-    }
+		return {
+			vibrantColor: swatch.color.css(),
+			vibrantBodyTextColor: swatch.bodyTextColor ? swatch.bodyTextColor.css() : '',
+			vibrantTitleTextColor: swatch.titleTextColor ? swatch.titleTextColor.css() : ''
+		};
+	}
+
+	function extractRecipeColorDataFromImageElement(imgElement) {
+		if (!window.ColorThief || !ColorThief.getSwatchesSync) {
+			console.warn("ColorThief v3 getSwatchesSync ist nicht verfügbar.");
+			return null;
+		}
+
+		const swatches = ColorThief.getSwatchesSync(imgElement);
+		const selectedSwatch = getPreferredSwatch(swatches);
+
+		return swatchToRecipeColorData(selectedSwatch);
+	}
+
+	function extractRecipeColorDataFromUrl(imageUrl) {
+		return new Promise((resolve) => {
+			if (!imageUrl) {
+				resolve(null);
+				return;
+			}
+
+			const img = new Image();
+
+			img.crossOrigin = "anonymous";
+
+			img.onload = () => {
+				try {
+					const colorData = extractRecipeColorDataFromImageElement(img);
+					resolve(colorData);
+				} catch (error) {
+					console.warn("Konnte Rezeptfarbe aus URL nicht extrahieren:", error);
+					resolve(null);
+				}
+			};
+
+			img.onerror = () => {
+				console.warn("Bild konnte für ColorThief nicht geladen werden:", imageUrl);
+				resolve(null);
+			};
+
+			img.src = imageUrl;
+		});
+	}
+
+	function resetViewModalInlineStyles() {
+		const infoCol = document.querySelector('.modal-info-col');
+		const stepsCol = document.querySelector('.modal-steps-col');
+		const title = document.getElementById('viewTitle');
+
+		infoCol.style.backgroundColor = 'var(--card-bg)';
+		stepsCol.style.backgroundColor = 'var(--card-bg)';
+
+		infoCol.style.color = 'var(--text-main)';
+		stepsCol.style.color = 'var(--text-main)';
+
+		title.style.color = '';
+		viewModal.querySelectorAll('h3').forEach(h => h.style.color = '');
+	}
+
+	function applyRecipeColorData(recipeOrColorData) {
+		const infoCol = document.querySelector('.modal-info-col');
+		const stepsCol = document.querySelector('.modal-steps-col');
+		const title = document.getElementById('viewTitle');
+		const headings = viewModal.querySelectorAll('h3');
+
+		if (!recipeOrColorData || !recipeOrColorData.vibrantColor) {
+			resetViewModalInlineStyles();
+			return;
+		}
+
+		infoCol.style.backgroundColor = recipeOrColorData.vibrantColor;
+		stepsCol.style.backgroundColor = recipeOrColorData.vibrantColor;
+
+		if (recipeOrColorData.vibrantBodyTextColor) {
+			infoCol.style.color = recipeOrColorData.vibrantBodyTextColor;
+			stepsCol.style.color = recipeOrColorData.vibrantBodyTextColor;
+		}
+
+		if (recipeOrColorData.vibrantTitleTextColor) {
+			title.style.color = recipeOrColorData.vibrantTitleTextColor;
+			headings.forEach(h => h.style.color = recipeOrColorData.vibrantTitleTextColor);
+		}
+	}
+
+	async function saveRecipeColorData(recipe, colorData) {
+		if (!recipe || !recipe.id || !colorData || !colorData.vibrantColor) return;
+
+		try {
+			await updateDoc(doc(db, "recipes", recipe.id), colorData);
+
+			// Update local object immediately so the current session benefits too.
+			Object.assign(recipe, colorData);
+
+		} catch (error) {
+			console.warn("Konnte Rezeptfarbe nicht in Firestore speichern:", error);
+		}
+	}    
 
     function applySwatchToModal(swatch) {
         const infoCol = document.querySelector('.modal-info-col');
@@ -880,68 +991,64 @@
         }
     }
 
-    function openViewModal(recipe) {
-        activeViewRecipe = recipe;
-        currentViewPortions = recipe.portions || 1;
+	function openViewModal(recipe) {
+		activeViewRecipe = recipe;
+		currentViewPortions = recipe.portions || 1;
 
-        document.getElementById('viewTitle').textContent = recipe.title;
-        document.getElementById('viewTags').innerHTML = generateTagsHTML(recipe.tags);
+		document.getElementById('viewTitle').textContent = recipe.title;
+		document.getElementById('viewTags').innerHTML = generateTagsHTML(recipe.tags);
 
-        renderScaledIngredients();
-        document.getElementById('viewSteps').innerHTML = recipe.steps.map(step => `<li>${step}</li>`).join('');
+		renderScaledIngredients();
+		document.getElementById('viewSteps').innerHTML = recipe.steps.map(step => `<li>${step}</li>`).join('');
 
-        const viewImg = document.getElementById('viewImg');
+		const viewImg = document.getElementById('viewImg');
 
-        resetViewModalInlineStyles();
+		resetViewModalInlineStyles();
 
-        viewImg.onload = function () {
-            try {
-                if (!window.ColorThief || !ColorThief.getSwatchesSync) {
-                    console.warn("ColorThief v3 getSwatchesSync ist nicht verfügbar.");
-                    resetViewModalInlineStyles();
-                    return;
-                }
+		/*
+			Option A:
+			If this recipe already has stored swatch colors, apply them BEFORE
+			showing the modal. This removes the white-to-color blink.
+		*/
+		if (recipe.vibrantColor) {
+			applyRecipeColorData(recipe);
+		}
 
-                const swatches = ColorThief.getSwatchesSync(viewImg);
+		viewImg.onload = async function () {
+			/*
+				Existing old recipes may not have stored colors yet.
+				For those, extract once, apply, then save to Firestore.
+				After that, the next open is instant.
+			*/
+			if (!recipe.vibrantColor) {
+				try {
+					const colorData = extractRecipeColorDataFromImageElement(viewImg);
 
-                console.log("ColorThief swatches:", swatches);
+					if (colorData && colorData.vibrantColor) {
+						applyRecipeColorData(colorData);
+						await saveRecipeColorData(recipe, colorData);
+					}
 
-                const selectedSwatch =
-                    swatches.Vibrant ||
-                    swatches.LightVibrant ||
-                    swatches.DarkVibrant ||
-                    swatches.Muted ||
-                    swatches.LightMuted ||
-                    swatches.DarkMuted;
+				} catch (error) {
+					console.warn("Fehler beim Auslesen und Speichern der Rezeptfarbe:", error);
+					resetViewModalInlineStyles();
+				}
+			}
+		};
 
-                applySwatchToModal(selectedSwatch);
+		viewImg.onerror = function () {
+			if (!recipe.vibrantColor) {
+				resetViewModalInlineStyles();
+			}
+		};
 
-            } catch (error) {
-                console.warn("Fehler beim Auslesen der ColorThief-Swatches:", error);
-                resetViewModalInlineStyles();
-            }
-        };
+		viewImg.crossOrigin = "anonymous";
+		viewImg.removeAttribute('src');
+		viewImg.src = recipe.image;
 
-        viewImg.onerror = function () {
-            resetViewModalInlineStyles();
-        };
-
-        /*
-            Must be set before assigning src.
-            Firebase Storage also needs CORS configured for this to work.
-        */
-        viewImg.crossOrigin = "anonymous";
-
-        /*
-            Force image reload so onload reliably fires even if the same image
-            was already opened before.
-        */
-        viewImg.removeAttribute('src');
-        viewImg.src = recipe.image;
-
-        viewModal.showModal();
-        lockScroll();
-    }
+		viewModal.showModal();
+		lockScroll();
+	}
 
     document.getElementById('btnMinusPortion').addEventListener('click', () => {
         if (currentViewPortions > 1) {
@@ -1135,15 +1242,27 @@
             finalImageUrl = `https://via.placeholder.com/800x600?text=${encodeURIComponent(title)}`;
         }
 
-        const recipeData = {
-            title,
-            hasPortions,
-            portions,
-            tags,
-            image: finalImageUrl,
-            ingredients,
-            steps
-        };
+
+		let recipeColorData = null;
+
+		try {
+			recipeColorData = await extractRecipeColorDataFromUrl(finalImageUrl);
+		} catch (error) {
+			console.warn("Konnte Rezeptfarbe beim Speichern nicht extrahieren:", error);
+		}
+
+		const recipeData = {
+			title,
+			hasPortions,
+			portions,
+			tags,
+			image: finalImageUrl,
+			ingredients,
+			steps,
+			vibrantColor: recipeColorData?.vibrantColor || '',
+			vibrantBodyTextColor: recipeColorData?.vibrantBodyTextColor || '',
+			vibrantTitleTextColor: recipeColorData?.vibrantTitleTextColor || ''
+		};
 
         if (activeRecipeId) {
             await updateDoc(doc(db, "recipes", activeRecipeId), recipeData);
